@@ -1,0 +1,14 @@
+## Queries
+
+The `queries.txt` file contains one query per line, 485 in total, where each line has two tab-separated fields: queryID and query text. 
+QueryID-s follow a `{source}-{X}` pattern, where `{source}` denotes the source and `{X}` refers to the original queryID (used at the given benchmark where the query originates from).
+
+  - `INEX-LD-{X}`: 100 queries from the INEX 2012 Linked Data track
+  - `INEX-XER-{X}`: 55 queries from the INEX 2009 Entity Ranking track
+  - `QALD2_te-{X}`, `QALD2-tr-{X}`: 140 queries from the Question Answering over Linked Data Challenge (`tr` and `te` are training test queries in the original query set, respectively)
+  - `SemSearch_ES-{X}`: 130 queries from the entity search task of the 2010 and 2011 Semantic Search Challenge 
+  - `SemSearch_LS-{X}`: 43 queries from the list search task of the 2011 Semantic Search Challenge 
+  - `TREC_Entity-{X}`: 17 queries from the TREC 2009 Entity track
+
+In all cases, we use only the keyword part of the query and ignore any additional markup, type information, or other hints (like example entities) that may be available as part of the topic definition according to the original task setup.
+

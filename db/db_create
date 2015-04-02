@@ -1,0 +1,114 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+CREATE SCHEMA IF NOT EXISTS `ir` DEFAULT CHARACTER SET utf8 ;
+USE `ir` ;
+
+-- -----------------------------------------------------
+-- Table `ir`.`test_collections`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ir`.`test_collections` ;
+
+CREATE TABLE IF NOT EXISTS `ir`.`test_collections` (
+  `id_test_collections` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  PRIMARY KEY (`id_test_collections`),
+  UNIQUE INDEX `id_test_collections_UNIQUE` (`id_test_collections` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ir`.`queries`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ir`.`queries` ;
+
+CREATE TABLE IF NOT EXISTS `ir`.`queries` (
+  `id_query` INT NOT NULL AUTO_INCREMENT,
+  `id_collection` INT NOT NULL,
+  `query` VARCHAR(255) NULL,
+  PRIMARY KEY (`id_query`, `id_collection`),
+  INDEX `fk_queries_1_idx` (`id_collection` ASC),
+  CONSTRAINT `fk_queries_1`
+    FOREIGN KEY (`id_collection`)
+    REFERENCES `ir`.`test_collections` (`id_test_collections`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ir`.`runs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ir`.`runs` ;
+
+CREATE TABLE IF NOT EXISTS `ir`.`runs` (
+  `id_run` INT NOT NULL AUTO_INCREMENT,
+  `id_collection` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `user_id` VARCHAR(45) NULL,
+  `privat` TINYINT(1) NULL,
+  PRIMARY KEY (`id_run`, `id_collection`),
+  INDEX `fk_runs_1_idx` (`id_collection` ASC),
+  CONSTRAINT `fk_runs_1`
+    FOREIGN KEY (`id_collection`)
+    REFERENCES `ir`.`test_collections` (`id_test_collections`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ir`.`results`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ir`.`results` ;
+
+CREATE TABLE IF NOT EXISTS `ir`.`results` (
+  `id_run` INT NOT NULL,
+  `id_query` INT NOT NULL,
+  `id_doc` INT NULL,
+  `resultscol` VARCHAR(45) NULL,
+  `score` VARCHAR(45) NULL,
+  PRIMARY KEY (`id_run`, `id_query`),
+  INDEX `fk_results_2_idx` (`id_query` ASC),
+  CONSTRAINT `fk_results_1`
+    FOREIGN KEY (`id_run`)
+    REFERENCES `ir`.`runs` (`id_run`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_results_2`
+    FOREIGN KEY (`id_query`)
+    REFERENCES `ir`.`queries` (`id_query`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `ir`.`qrels`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ir`.`qrels` ;
+
+CREATE TABLE IF NOT EXISTS `ir`.`qrels` (
+  `id_collection` INT NOT NULL,
+  `id_query` INT NOT NULL,
+  `doc_id` INT NULL,
+  `relevant` TINYINT(1) NULL,
+  PRIMARY KEY (`id_collection`, `id_query`),
+  INDEX `fk_qrels_2_idx` (`id_query` ASC),
+  CONSTRAINT `fk_qrels_1`
+    FOREIGN KEY (`id_collection`)
+    REFERENCES `ir`.`test_collections` (`id_test_collections`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_qrels_2`
+    FOREIGN KEY (`id_query`)
+    REFERENCES `ir`.`queries` (`id_query`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

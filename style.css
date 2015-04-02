@@ -1,0 +1,47 @@
+.popup {
+	visibility: hidden;
+	z-index: 10001;
+	margin-top: 20px;
+	top: 40px;
+	left: 50px;
+	position: absolute;
+	
+    background-color: rgba(70, 70, 70, 0.6);
+    padding: 4px;
+    box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+}
+
+.stem.bottomright {
+	top: -20px;
+	right: 5px;
+	float: right;
+	width: 20px;
+    height: 20px;
+	z-index: 10002;
+
+    background-image: url("./img/close.png");
+}
+
+.popupInner {
+	padding: 10px;
+	width: auto;
+	max-height: 552px;
+	
+    background: none repeat scroll 0% 0% #FFF;
+    overflow-y: auto;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.4);
+    overflow-x: hidden;
+}
+
+.topbar{
+	margin: 10px;
+}
+
+.buttom{
+	margin: 0px 5px 5px;
+	width: auto;
+    padding: 4px;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+}

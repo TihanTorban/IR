@@ -1,0 +1,127 @@
+trec_eval [-h] [-q] [-m measure[.params] [-c] [-n] [-l <num>]
+   [-D debug_level] [-N <num>] [-M <num>] [-R rel_format] [-T results_format]
+   rel_info_file  results_file 
+ 
+Calculate and print various evaluation measures, evaluating the results  
+in results_file against the relevance info in rel_info_file. 
+ 
+There are a fair number of options, of which only the lower case options are 
+normally ever used.   
+ --help:
+ -h: Print full help message and exit. Full help message will include
+     descriptions for any measures designated by a '-m' parameter, and
+     input file format descriptions for any rel_info_format given by '-R'
+     and any top results_format given by '-T.'
+     Thus to see all info about preference measures use
+          trec_eval -h -m all_prefs -R prefs -T trec_results 
+ --version:
+ -v: Print version of trec_eval and exit.
+ --query_eval_wanted:
+ -q: In addition to summary evaluation, give evaluation for each query/topic
+ --measure measure_name[.measure_params]:
+ -m measure: Add 'measure' to the lists of measures to calculate and print.
+    If 'measure' contains a '.', then the name of the measure is everything
+    preceeding the period, and everything to the right of the period is
+    assumed to be a list of parameters for the measure, separated by ','. 
+    There can be multiple occurrences of the -m flag.
+    'measure' can also be a nickname for a set of measures. Current 
+    nicknames include 
+       'official': the main measures often used by TREC
+       'all_trec': all measures calculated with the standard TREC
+                   results and rel_info format files.
+       'set': subset of all_trec that calculates unranked values.
+       'prefs': Measures not in all_trec that calculate preference measures.
+ --complete_rel_info_wanted:
+ -c: Average over the complete set of queries in the relevance judgements  
+     instead of the queries in the intersection of relevance judgements 
+     and results.  Missing queries will contribute a value of 0 to all 
+     evaluation measures (which may or may not be reasonable for a  
+     particular evaluation measure, but is reasonable for standard TREC 
+     measures.) Default is off.
+ --level_for_rel num:
+ -l<num>: Num indicates the minimum relevance judgement value needed for 
+      a document to be called relevant. Used if rel_info_file contains 
+      relevance judged on a multi-relevance scale.  Default is 1. 
+ --nosummary:
+ -n: No summary evaluation will be printed
+ --Debug_level num:
+ -D <num>: Debug level.  1 and 2 used for measures, 3 and 4 for merging
+     rel_info and results, 5 and 6 for input.  Currently, num can be of the
+     form <num>.<qid> and only qid will be evaluated with debug info printed.
+     Default is 0.
+ --Number_docs_in_coll num:
+ -N <num>: Number of docs in collection Default is MAX_LONG 
+ -Max_retrieved_per_topic num:
+ -M <num>: Max number of docs per topic to use in evaluation (discard rest). 
+      Default is MAX_LONG.
+ --Judged_docs_only:
+ -J: Calculate all values only over the judged (either relevant or  
+     nonrelevant) documents.  All unjudged documents are removed from the 
+     retrieved set before any calculations (possibly leaving an empty set). 
+     DO NOT USE, unless you really know what you're doing - very easy to get 
+     reasonable looking numbers in a file that you will later forget were 
+     calculated  with the -J flag.  
+ --Rel_info_format format:
+ -R format: The rel_info file is assumed to be in format 'format'.  Current
+    values for 'format' include 'qrels', 'prefs', 'qrels_prefs'.  Note not
+    all measures can be calculated with all formats.
+ --Results_format format:
+ -T format: the top results_file is assumed to be in format 'format'. Current
+    values for 'format' include 'trec_results'. Note not all measures can be
+    calculated with all formats.
+ --Zscore Zmean_file:
+ -Z Zmean_file: Instead of printing the raw score for each measure, print
+    a Z score instead. The score printed will be the deviation from the mean
+    of the raw score, expressed in standard deviations, where the mean and
+    standard deviation for each measure and query are found in Zmean_file.
+    If mean is not in Zmeanfile for a measure and query, -1000000 is printed.
+    Zmean_file format is ascii lines of form 
+       qid  measure_name  mean  std_dev
+ 
+ 
+Standard evaluation procedure:
+For each of the standard TREC measures requested, a ranked list of
+of relevance judgements is created corresponding to each ranked retrieved doc,
+A rel judgement is set to -1 if the document was not in the pool (not in 
+rel_info_file) or -2 if the document was in the pool but unjudged (some 
+measures (infAP) allow the pool to be sampled instead of judged fully).  
+Otherwise it is set to the value in rel_info_file. 
+Most measures, but not all, will treat -1 or -2 the same as 0, 
+namely nonrelevant.  Note that relevance_level is used to 
+determine if the document is relevant during score calculations. 
+Queries for which there is no relevance information are ignored. 
+Warning: queries for which there are relevant docs but no retrieved docs 
+are also ignored by default.  This allows systems to evaluate over subsets  
+of the relevant docs, but means if a system improperly retrieves no docs,  
+it will not be detected.  Use the -c flag to avoid this behavior. 
+
+-----------------------
+Results_file format: Standard 'trec_results'
+Lines of results_file are of the form 
+     030  Q0  ZF08-175-870  0   4238   prise1 
+     qid iter   docno      rank  sim   run_id 
+giving TREC document numbers (a string) retrieved by query qid  
+(a string) with similarity sim (a float).  The other fields are ignored, 
+with the exception that the run_id field of the last line is kept and 
+output.  In particular, note that the rank field is ignored here; 
+internally ranks are assigned by sorting by the sim field with ties  
+broken deterministicly (using docno). 
+Sim is assumed to be higher for the docs to be retrieved first. 
+File may contain no NULL characters. 
+Lines may contain fields after the run_id; they are ignored. 
+
+-----------------------
+Rel_info_file format: Standard 'qrels'
+Relevance for each docno to qid is determined from rel_info_file, which 
+consists of text tuples of the form 
+   qid  iter  docno  rel 
+giving TREC document numbers (docno, a string) and their relevance (rel,  
+a non-negative integer less than 128, or -1 (unjudged)) 
+to query qid (a string).  iter string field is ignored.   
+Fields are separated by whitespace, string fields can contain no whitespace. 
+File may contain no NULL characters. 
+
+-----------------------
+Individual measure documentation for requested measures
+-- No measures indicated.
+   Request measure documentation using <-m measure> on command line

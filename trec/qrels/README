@@ -1,0 +1,29 @@
+## Qrels
+
+The `qrels.txt` file contains relevance jugments in standard TREC format. A couple of remarks:
+
+   - The file contains URIs of relevant entities, and only those. (That is, URIs that were judged as non-relevant are not included.)
+   - It is reasonable to assume that all relevant entities have been found (as of version 3.7 of DBpedia), although this has not been checked. 
+   - Relevance is taken to be binary. Two query subsets, however, have graded judgments and these have been preserved in the file. Specifically, `SemSearch_ES` and `SemSearch_LS` queries have fair (1) and excellent (2) relevance levels.
+   - DBpedia URIs have been normalized to conform with the encoding used by the official DBpedia dump; we replaced redirect pages with the URIs they redirect to, and filtered out URIs that are not entity pages.
+
+
+The format of a qrels file is as follows:
+
+    TOPIC      ITERATION      DOCUMENT#      RELEVANCY
+
+    where TOPIC is the topic number,
+    ITERATION is the feedback iteration (almost always zero and not used),
+    DOCUMENT# is the official document number that corresponds to the "docno" field in the documents, and
+    RELEVANCY is a binary code of 0 for not relevant and 1 for relevant.
+
+Sample Qrels File:
+
+    1 0 AP880212-0161 0
+    1 0 AP880216-0139 1
+    1 0 AP880216-0169 0
+    1 0 AP880217-0026 0
+    1 0 AP880217-0030 0
+
+The order of documents in a qrels file is not indicative of relevance or degree of relevance. Only a binary indication of relevant (1) or non-relevant (0) is given. Documents not occurring in the qrels file were not judged by the human assessor and are assumed to be irrelevant in the evaluations used in TREC. The human assessors are told to judge a document relevant if any piece of the document is relevant (regardless of how small the piece is in relation to the rest of the document).
+

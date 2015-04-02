@@ -1,0 +1,9 @@
+## Qrels
+
+The `qrels.txt` file contains relevance jugments in standard TREC format. A couple of remarks:
+
+   - The file contains URIs of relevant entities, and only those. (That is, URIs that were judged as non-relevant are not included.)
+   - It is reasonable to assume that all relevant entities have been found (as of version 3.7 of DBpedia), although this has not been checked. 
+   - Relevance is taken to be binary. Two query subsets, however, have graded judgments and these have been preserved in the file. Specifically, `SemSearch_ES` and `SemSearch_LS` queries have fair (1) and excellent (2) relevance levels.
+   - DBpedia URIs have been normalized to conform with the encoding used by the official DBpedia dump; we replaced redirect pages with the URIs they redirect to, and filtered out URIs that are not entity pages.
+
