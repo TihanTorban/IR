@@ -83,6 +83,26 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 				}
 				break;
 				
+			case "avgParam":
+				try {
+					if ( isset($_GET["param"]) && isset($_GET["id_run"]) && !empty($id_collection) ){
+						$trec_eval = new Trec_eval($mysql, $id_user, -1);
+						if ($_GET["param"] == 'recall'){
+							$result['avrAll'] = $trec_eval->getAVRrecall();
+							$result['avrColl'] = $trec_eval->getAVRrecall($id_collection);
+							$result['id'] = $trec_eval->getRecall( $_GET["id_run"]);
+						}else{
+							$result['avrAll'] = $trec_eval->getAVG($_GET["param"]);
+							$result['avrColl'] = $trec_eval->getAVG($_GET["param"], $id_collection);
+							$result['id'] = $trec_eval->getTrecValue($_GET["param"], $_GET["id_run"]);
+						}
+					}
+				} catch (Exception $e) {
+					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+				}
+					
+				break;
+				
 			default:
 				echo "";
 				break;

@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 15:53:52
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 17:01:44
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:83164565354ef9f9c23f866-60064323%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '7941f6f864ba7ae69577d90a7026010e1af2dfd5' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl',
-      1 => 1428069226,
+      1 => 1428072683,
       2 => 'file',
     ),
   ),
@@ -97,7 +97,14 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	</div>
 </div>
 
-
+<div class="row">
+	<div class="col-md-6 col-sm-6 col-xs-12">
+		<div class='trec_eval_data naturalLG' id="a"></div>
+	</div>
+	<div class="col-md-6  col-sm-6 col-xs-12">
+		<div class='trec_eval_data naturalLG' id="b"></div>
+	</div>
+</div>
 
 <div class="row">
 	<div class="col-md-6 col-sm-6 col-xs-12">
@@ -106,5 +113,4 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	<div class="col-md-6  col-sm-6 col-xs-12">
 		<div class='trec_eval_data' id="b"></div>
 	</div>
-</div>
-<?php }} ?>
+</div><?php }} ?>

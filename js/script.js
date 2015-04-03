@@ -1,5 +1,10 @@
 var id_user = 1;
 var data_eval = [];
+var natural_a = "is weak in finding relevant results, and the quality of the retrieved results is low. Therefore, this method is generally not recommended, unless specific reasons warrant its use.";
+var natural_b = "is effective in retrieving relevant results, but generally the quality of the retrieved documents is low. Therefore, this method is acceptable for queries where it is desirable to find as many relevant documents as possible.";
+var natural_c = "is weak in finding relevant results in the pool of data, but the returned results are generally of high quality. Therefore, this method is acceptable for queries where the quality of the retrieved documents is more important than the number of relevant documents retrieved.";
+var natural_d = "is effective in finding relevant results, and the quality of the retrieved results is good. Therefore, this method is generally recommended for all type of searches.";
+
 
 $(document).ready(function (events) {
 	
@@ -113,6 +118,60 @@ $(document).ready(function (events) {
 		
 	}));
 
+	$("#runs_a").change(function(){
+		if ( $("#runs_a").val() > -1){
+			var run_id = $("#runs_a").val();
+			var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
+
+			var avrRecal = getAVRparam(run_id, 'recall');
+			
+			if (avrMAP['id']<avrMAP['avrColl']){
+				if(avrRecal['id']<avrRecal['avrColl']){
+					$result = natural_a;
+				}else{
+					$result = natural_c;
+				}
+			}else{
+				if(avrRecal['id']<avrRecal['avrColl']){
+					$result = natural_b;
+				}else{
+					$result = natural_d;
+				}
+			}
+			
+			$(".naturalLG#a").append("<br/><b>"+$("#runs_a option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
+		}else{
+			$(".naturalLG#a").empty();
+		}
+	});
+
+	$("#runs_b").change(function(){
+		if ( $("#runs_b").val() > -1){
+			var run_id = $("#runs_b").val();
+			var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
+
+			var avrRecal = getAVRparam(run_id, 'recall');
+			
+			if (avrMAP['id']<avrMAP['avrColl']){
+				if(avrRecal['id']<avrRecal['avrColl']){
+					$result = natural_a;
+				}else{
+					$result = natural_c;
+				}
+			}else{
+				if(avrRecal['id']<avrRecal['avrColl']){
+					$result = natural_b;
+				}else{
+					$result = natural_d;
+				}
+			}
+			
+			$(".naturalLG#b").append("<br/><b>"+$("#runs_b option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
+		}else{
+			$(".naturalLG#b").empty();
+		}
+	});
+	
     $("#submit_compare").click(function(){
     	if ( $("#runs_a").val() > -1 && $('#runs_b').val() > -1){
     		getTrec_eval();
@@ -430,3 +489,37 @@ function drawChart(data_eval, param, order){
 	}
 }
 
+function getAVRparam(run_id, param){
+	var id_collection = $("#collection_sett").val();
+	var avr;
+	console.log(id_collection);
+	$.ajax({
+		url: 'getData.php?data=avgParam&param='+param+'&id_user='+id_user+'&id_run='+run_id+'&id_collection='+id_collection,			// Url to which the request is send
+		type: "GET",				// Type of request to be send, called as method
+		enctype: 'multipart/form-data',
+		async: false,
+		contentType: false,			// The content type used when sending data to the server.
+		cache: false,				// To unable request pages to be cached
+		processData:false,			// To send DOMDocument or non processed data file it is set to false
+		success: function(data)		// A function to be called if request succeeds
+		{
+			avr = JSON.parse(data);
+		}
+	});
+//	
+//	$.get("getData.php",
+//			{
+//				data : "avgParam",
+//				param: param,
+//				id_user: id_user,
+//				id_run: run_id,
+//				id_collection: id_collection
+//			}
+//	)
+//	.done(function(data, status){
+//		avr = JSON.parse(data);
+//
+//	});
+//	alert(avr);
+	return avr;
+}

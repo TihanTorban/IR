@@ -76,7 +76,14 @@
 	</div>
 </div>
 
-
+<div class="row">
+	<div class="col-md-6 col-sm-6 col-xs-12">
+		<div class='trec_eval_data naturalLG' id="a"></div>
+	</div>
+	<div class="col-md-6  col-sm-6 col-xs-12">
+		<div class='trec_eval_data naturalLG' id="b"></div>
+	</div>
+</div>
 
 <div class="row">
 	<div class="col-md-6 col-sm-6 col-xs-12">

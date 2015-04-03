@@ -141,5 +141,83 @@ class Trec_eval{
 		}
 	}
 
+	public function getAVG($parameter, $collection=null){
+		$id_run = $this->db->real_escape_string($this->id_run);
+		$id_user = $this->db->real_escape_string($this->id_user);
+		$query = "SELECT AVG(t.value) as avr FROM ir.trec_eval as t ".
+					"INNER JOIN runs as r ".
+					"ON t.id_run = r.id_run ".
+					"WHERE  ".
+							"t.name = '$parameter' ".
+						"AND  ".
+							"t.id_query = 'all'"; 
+		if (!empty($collection)){
+			$query .= "AND r.id_collection = '$collection'";
+		}
+		
+		if($result = $this->db->query($query)){
+		
+			if ($result->num_rows > 0) {
+		
+				$row = $result->fetch_assoc();
+
+				$avr = $row['avr'];
+		
+				return $avr;
+		
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public function getTrecValue($parameter, $run, $collection=null){
+		$id_run = $this->db->real_escape_string($this->id_run);
+		$id_user = $this->db->real_escape_string($this->id_user);
+		
+		$query = "SELECT value FROM ir.trec_eval ".
+					"WHERE  id_run = '$run' ".
+						"AND ".
+							"name = '$parameter' ".
+						"AND  ".
+							"id_query = 'all'"; 
+		if (!empty($collection)){
+			$query .= "AND id_collection = '$collection'";
+		}
+		
+		if($result = $this->db->query($query)){
+		
+			if ($result->num_rows > 0) {
+		
+				$row = $result->fetch_assoc();
+		
+				$val = $row['value'];
+		
+				return $val;
+		
+			} else {
+				return false;
+			}
+		}
+		
+	}
+	
+	public function getRecall($run){
+		
+		$num_rel = $this->getTrecValue('num_rel', $run);
+		$num_rel_ret = $this->getTrecValue('num_rel_ret', $run);
+		
+		return $num_rel_ret/$num_rel;
+		
+	}
+	
+	public function getAVRrecall($collection=null){
+
+		$num_rel = $this->getAVG("num_rel", $collection);
+		$num_rel_ret = $this->getAVG("num_rel_ret", $collection);
+		
+		return $num_rel_ret/$num_rel;
+		
+	}
 }
 ?>
