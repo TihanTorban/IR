@@ -80,9 +80,9 @@
 
 <div class="row">
 	<div class="col-md-6 col-sm-6 col-xs-12">
-		<pre id="trec_eval_data_a"></pre>
+		<div class='trec_eval_data' id="a"></div>
 	</div>
 	<div class="col-md-6  col-sm-6 col-xs-12">
-		<pre id="trec_eval_data_b"></pre>
+		<div class='trec_eval_data' id="b"></div>
 	</div>
 </div>

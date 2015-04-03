@@ -51,6 +51,7 @@ class Runs{
 					"WHERE R.id_query='". $id_query ."' ".
 						"AND R.id_run='". $id_run ."' ".
 						"AND R.id_collection = '". $id_collection ."' ".
+					"GROUP BY doc_id ".
 					"ORDER BY rank;";
 
 		if($result = $this->db->query($query)){

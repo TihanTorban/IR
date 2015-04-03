@@ -119,6 +119,12 @@ $(document).ready(function (events) {
     	}
     });
     
+    $(document).on('click', '.compareQrels', function () {
+    	id = $(this).attr('id');
+    	$( 'span' ).removeClass( 'highlight' );
+    	$("#"+id).addClass('highlight');
+    });
+    
 });
 
 function compareSecondColumn(a, b) {
@@ -345,8 +351,8 @@ function drawChart(data_eval, param, order){
 	
 	function selectHandler() {
 
-		$("#trec_eval_data_a").empty();
-		$("#trec_eval_data_b").empty();
+		$(".trec_eval_data#a").empty();
+		$(".trec_eval_data#b").empty();
 		
 		var selectedItem = chart.getSelection()[0];
 		var runValues_a = null;
@@ -374,11 +380,22 @@ function drawChart(data_eval, param, order){
 			.done(function(data, status){
 
 				runValues_a = JSON.parse(data);
-				$("#trec_eval_data_a").append(id_query + "\n");
+				$(".trec_eval_data#a").append("<b>RUN: </b>"+run_name_a+"; ");
+				$(".trec_eval_data#a").append("<b>Query id: </b>"+id_query);
+				
 				$.each(runValues_a, function(index, value) {
-
-					  $("#trec_eval_data_a").append(value.doc_id + "\t" + value.relevant + "\n");
-					});
+					doc_arr = value.doc_id.split("/");
+					doc_name = decodeURI($(doc_arr).get(-1));
+					if (value.relevant > 0){
+						$(".trec_eval_data#a").append("<br/><span class='compareQrels relevant' id='"+doc_name+"'>" + 
+								  							value.doc_id + 
+							  							"</span>");
+					}else{
+						$(".trec_eval_data#a").append("<br/><span class='compareQrels' id='"+doc_name+"'>" + 
+								  							value.doc_id + 
+							  							"</span>");
+					}
+				});
 			});
 	    		  
 			$.get("getData.php",
@@ -393,10 +410,19 @@ function drawChart(data_eval, param, order){
 			.done(function(data, status){
 				
 				runValues_b = JSON.parse(data);
-				$("#trec_eval_data_b").append(id_query + "\n");
+				$(".trec_eval_data#b").append("<b>RUN:</b> "+run_name_b+"; ");
+				$(".trec_eval_data#b").append("<b>Query id:</b> "+id_query);
+				
 				$.each(runValues_b, function(index, value) {
-					
-					$("#trec_eval_data_b").append(value.doc_id + "\t" + value.relevant + "\n");
+					doc_arr = value.doc_id.split("/");
+					doc_name = decodeURI($(doc_arr).get(-1));
+					if (value.relevant > 0){
+						$(".trec_eval_data#b").append("<br/><span class='compareQrels relevant' id='"+doc_name+"'>" + 
+							  							value.doc_id + "</span>");
+					}else{
+						$(".trec_eval_data#b").append("<br/><span class='compareQrels' id='"+doc_name+"'>" + 
+							  							value.doc_id + "</span>");
+					}
 				});
 			});
 	
