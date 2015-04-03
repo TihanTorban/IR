@@ -192,7 +192,7 @@ function getTrec_eval(){
 	var id_collection = $("#collection_sett").val();
 	
 	$.get(	"getData.php", 
-			{ 	data: "trec_eval", 
+			{ 	data: "compareTwoRun", 
 				id_user: id_user, 
 				id_collection: id_collection, 
 				run_id_a: run_id_a, 
@@ -202,44 +202,37 @@ function getTrec_eval(){
 	.done(function(data, status){
 		trec_eval = JSON.parse(data);
 		
-//		var data_eval = [];
+		data_eval = [];
+		$.each(trec_eval, function(run_id, run_val) {
+			if ( !(typeof( data_eval[run_id] ) !== "undefined" && data_eval[run_id]) ) {
+		    	data_eval[run_id] = [];
+		    }
 
-		$.each(trec_eval["trec_eval_a"], function(index, value) {
-			$.each(value, function(eval_id, val) {
-			    if ( !(typeof( data_eval[eval_id] ) !== "undefined" && data_eval[eval_id]) ) {
-			    	data_eval[eval_id] = [];
-			    }
-			    if ( !(typeof( data_eval[eval_id][index] ) !== "undefined" && data_eval[eval_id][index]) ) {
-					data_eval[eval_id][index] = [];
-				}
-			    
-				data_eval[eval_id][index]['value_a'] = val;
-				data_eval[eval_id][index]['value_b'] = 0;
-				data_eval[eval_id][index]['dif_value'] = val;
-			});
-		});
-		
-		$.each(trec_eval["trec_eval_b"], function(index, value) {
-			$.each(value, function(eval_id, val) {
-				if ( !(typeof( data_eval[eval_id] ) !== "undefined" && data_eval[eval_id]) ) {
-					data_eval[eval_id] = [];
-				}
-				if ( !(typeof( data_eval[eval_id][index] ) !== "undefined" && data_eval[eval_id][index]) ) {
-					data_eval[eval_id][index] = [];
-				}
-				
-				data_eval[eval_id][index]['value_b'] = val;
-				data_eval[eval_id][index]['dif_value'] -= val;
+			$.each(run_val, function(index, value) {
+				$.each(value, function(eval_id, val) {
+				    if ( !(typeof( data_eval[run_id][eval_id] ) !== "undefined" && data_eval[run_id][eval_id]) ) {
+				    	data_eval[run_id][eval_id] = [];
+				    }
+				    if ( !(typeof( data_eval[run_id][eval_id][index] ) !== "undefined" && data_eval[run_id][eval_id][index]) ) {
+						data_eval[run_id][eval_id][index] = [];
+					}
+				    
+					data_eval[run_id][eval_id][index] = val;
+				});
 			});
 		});
 		
 	//================================================================
-
+		
 		$("#trec_eval_param").empty();
-		for (var index in data_eval) {
-			if(index != 'runid'){
-				$("#trec_eval_param").append("<option value='"+index+"' >"+index+"</option>");
+		
+		for (var run_id in data_eval) {
+			for (var eval_id in data_eval[run_id]) {
+				if(eval_id != 'runid'){
+					$("#trec_eval_param").append("<option value='"+eval_id+"' >"+eval_id+"</option>");
+				}
 			}
+			break;
 		}
 		
 	//================================================================
@@ -258,38 +251,58 @@ function getTrec_eval(){
  * draws it.
  */
 function drawChart(data_eval, param, order){
-
+	var runs_id = ['A', 'B'];
+	var i = 0;
+	for (var id in data_eval){
+		runs_id[i++] = id;	
+	}
+	
+	var run_id_a = $("#runs_a").val();
+	var run_id_b = $("#runs_b").val();
+	var run_name_a = runs_id[0];
+	var run_name_b = runs_id[1];
+	var id_collection = $("#collection_sett").val();
+	
 	var data_tail = [];
 	var data_not_ordered = [];
-	var a = [];
-	var b = [];
-	var d = [];
+	var v = [];
+	v[1] = [];
+	v[2] = [];
+	v[3] = [];
+	var v_a = [];
 	
-	for (var index in data_eval[param]) {
-		var v_a = parseFloat(data_eval[param][index]['value_a']);
-		var v_b = parseFloat(data_eval[param][index]['value_b']);
-		var v_d = parseFloat(data_eval[param][index]['dif_value']);
-		
-		data_not_ordered[data_not_ordered.length] = [index, v_a, v_b, v_d];
-		a[a.length] = v_a;
-		b[b.length] = v_b;
-		d[d.length] = v_d;
-	};
+	var i = 0;
 	
-	
+	for (var run_id in data_eval) {
+		for (var query_id in data_eval[run_id][param]) {
+			if ( i == 0 ){
+				v_a[query_id] = parseFloat(data_eval[run_id][param][query_id]);
+			}else{
+				v_b = parseFloat(data_eval[run_id][param][query_id]);
+				v_d = v_a[query_id] - v_b;
+				v[1][v[1].length] = {value: v_a[query_id], query_id: query_id};
+				v[2][v[2].length] = {value: v_b, query_id: query_id};
+				v[3][v[3].length] = {value: v_d, query_id: query_id};
+				
+				data_not_ordered[data_not_ordered.length] = [query_id, v_a[query_id], v_b, v_d];
+			}
+		}
+		i++;
+	}
+//	ordering of data ====================================================================
 	if (order == 4){
-		a.sort(function(a, b){
-			return b-a;
+		v[1].sort(function(a, b){
+			return b.value-a.value;
 		});
-		b.sort(function(a, b){
-			return b-a;
+		v[2].sort(function(a, b){
+			return b.value-a.value;
 		});
-		d.sort(function(a, b){
-			return b-a;
+		v[3].sort(function(a, b){
+			return b.value-a.value;
 		});
 		
-		for (var index in a) {
-			data_tail[data_tail.length] = [index, a[index], b[index], d[index]];
+		for (var index in v[1]) {
+			data_tail[data_tail.length] = [index, v[1][index].value, v[2][index].value, v[3][index].value];
 		}
 	}else{
 		data_tail = data_not_ordered.sort(function(a, b){
@@ -298,21 +311,18 @@ function drawChart(data_eval, param, order){
 		    return a1 < b1 ? 1: -1;
 		});
 	}
+//=======================================================================================	
+
 	
-	var runs_id;
-	if ( typeof( data_eval['runid'] ) !== "undefined" && data_eval['runid'] ) {
-		runs_id = {a: data_eval['runid']['all']['value_a'], b: data_eval['runid']['all']['value_b']};
-	}else{
-		runs_id = {a: 'A', b: 'B'};
-	}
-	
-	
+	$("span#run_name_a").text(run_name_a);
+	$("span#run_name_b").text(run_name_b);
+	$("span#run_name_d").text("Diff(" + run_name_a + " - " + run_name_b + ")");
 	
 	var data = new google.visualization.DataTable();
 	data.addColumn('string', 'ID');
-	data.addColumn('number', runs_id['a']);
-	data.addColumn('number', runs_id['b']);
-	data.addColumn('number', 'Dif');
+	data.addColumn('number', run_name_a);
+	data.addColumn('number', run_name_b);
+	data.addColumn('number', 'Diff');
 	
 	data.addRows(data_tail);
 	
@@ -334,26 +344,24 @@ function drawChart(data_eval, param, order){
 	google.visualization.events.addListener(chart, 'select', selectHandler);
 	
 	function selectHandler() {
-		var run_id_a = $("#runs_a").val();
-//		var run_id_b = $("#runs_b").val();
-		
-//		var run_id_a = runs_id['a'];
-		var run_id_b = runs_id['b'];
-		
-		console.log(run_id_a);
-		
-		var id_collection = $("#collection_sett").val();
+
+		$("#trec_eval_data_a").empty();
+		$("#trec_eval_data_b").empty();
 		
 		var selectedItem = chart.getSelection()[0];
-		console.log(selectedItem);
 		var runValues_a = null;
 		
 		if (selectedItem) {
-			var id_query = data.getValue(selectedItem.row, 0);
-			
-			$("#trec_eval_data_a").empty();
-			$("#trec_eval_data_b").empty();
-			
+			var id_query;
+			if (order == 4){
+				var cal = selectedItem.column;
+				var row = data.getValue(selectedItem.row, 0);
+				id_query = v[cal][row].query_id;
+				
+			}else{
+				id_query = data.getValue(selectedItem.row, 0);
+			}
+
 			$.get("getData.php",
 				{
 					data : "run_values",

@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-01 13:22:48
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 11:00:13
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:83164565354ef9f9c23f866-60064323%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '7941f6f864ba7ae69577d90a7026010e1af2dfd5' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl',
-      1 => 1427887363,
+      1 => 1428051603,
       2 => 'file',
     ),
   ),
@@ -89,7 +89,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 		<label>Ordered by:</label>
 		<input type="radio" name="order" value='1' checked/><span id='run_name_a'>A</span>
 		<input type="radio" name="order" value='2'/><span id='run_name_b'>B</span>
-		<input type="radio" name="order" value='3'/><span>Dif</span>
+		<input type="radio" name="order" value='3'/><span id='run_name_d'>Dif</span>
 		<input type="radio" name="order" value='4'/><span>all</span>
 	</div>
 	<div class="col-md-12  col-sm-12 col-xs-12">

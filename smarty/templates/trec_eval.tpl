@@ -68,7 +68,7 @@
 		<label>Ordered by:</label>
 		<input type="radio" name="order" value='1' checked/><span id='run_name_a'>A</span>
 		<input type="radio" name="order" value='2'/><span id='run_name_b'>B</span>
-		<input type="radio" name="order" value='3'/><span>Dif</span>
+		<input type="radio" name="order" value='3'/><span id='run_name_d'>Dif</span>
 		<input type="radio" name="order" value='4'/><span>all</span>
 	</div>
 	<div class="col-md-12  col-sm-12 col-xs-12">

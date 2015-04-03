@@ -106,8 +106,14 @@ class Trec_eval{
 		$id_run = $this->db->real_escape_string($this->id_run);
 		$id_user = $this->db->real_escape_string($this->id_user);
 		
-		$query = "SELECT id_query, name, value, id_run FROM trec_eval ".
-					"WHERE id_run = '$id_run'";
+// 		$query = "SELECT id_query, name, value FROM trec_eval ".
+// 					"WHERE id_run = '$id_run'";
+		
+		$query = "SELECT t.id_query, t.name AS param, t.value, r.name AS run_name ". 
+					"FROM trec_eval AS t ".
+					"INNER JOIN runs AS r ".
+						"ON t.id_run = r.id_run ".
+					"WHERE t.id_run = '$id_run';";
 		
 		if($result = $this->db->query($query)){
 		
@@ -116,11 +122,11 @@ class Trec_eval{
 				while ($row = $result->fetch_assoc()) {
 					
 					$id_query = $row['id_query'];
-					$name =  $row['name'];
+					$param =  $row['param'];
 					$value =  $row['value'];
-					$id_run =  $row['id_run'];
+					$run_name =  $row['run_name'];
 					
-					$trec_eval[$id_query][$name] = $value;
+					$trec_eval[$run_name][$id_query][$param] = $value;
 						
 				}
 				

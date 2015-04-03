@@ -65,14 +65,16 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 				break;
 				
 				
-			case "trec_eval":
+			case "compareTwoRun":
 				try {
 					if ( isset($_GET["run_id_a"]) && isset($_GET["run_id_b"]) ){
 						$trec_eval_a = new Trec_eval($mysql, $id_user, $_GET["run_id_a"]);
 						$trec_eval_b = new Trec_eval($mysql, $id_user, $_GET["run_id_b"]);
 						
-						$result["trec_eval_a"] = $trec_eval_a->getTrecEval();
-						$result["trec_eval_b"] = $trec_eval_b->getTrecEval();
+						$a = $trec_eval_a->getTrecEval();
+						$b = $trec_eval_b->getTrecEval();
+						$result = array_merge($a, $b);
+						
 					}else{
 						error_msg("Not inaf data".PHP_EOL);
 					}
