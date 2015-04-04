@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-03-29 20:20:04
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 23:01:17
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/index.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:552501654ef9f9c032c50-68296638%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'aedc9de2499a8495a76343c790dc0a7cf9a0afc4' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/index.tpl',
-      1 => 1427653198,
+      1 => 1428094875,
       2 => 'file',
     ),
   ),
@@ -46,16 +46,24 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 					}]
 			}">
 			</script>
+			
+		<script type="text/javascript" src="js/script.js"></script>
 		
 		<link rel="stylesheet" href="style.css">
 
     </head>
     <body>
+        <?php echo $_smarty_tpl->getSubTemplate ("navbar.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+        <?php echo $_smarty_tpl->getSubTemplate ("upload.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
         
-        
-        <div class="container">
+        <div class="tab-content">
             
-            <?php echo $_smarty_tpl->getSubTemplate (((string)$_smarty_tpl->tpl_vars['page']->value).".tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+            
+            <?php echo $_smarty_tpl->getSubTemplate ("trec_eval.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+            <?php echo $_smarty_tpl->getSubTemplate ("info.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
         </div>
         

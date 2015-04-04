@@ -38,6 +38,19 @@
 	margin: 10px;
 }
 
+#tooltip {
+    z-index: 9999;
+	position: absolute;
+	display: none;
+	top:0px;
+	left:0px;
+	background-color: #000;
+	padding: 5px 10px 5px 10px;
+	color: white;
+	opacity: 0.6;
+	border-radius: 5px; 
+}
+
 .buttom{
 	margin: 0px 5px 5px;
 	width: auto;
@@ -46,8 +59,12 @@
     border-radius: 4px;
 }
 
-.highlight{
+.highlightPair{
 	background-color: #ff2;
+}
+
+.highlightSingle{
+	background-color: #2ff;
 }
 
 .relevant{

@@ -25,16 +25,21 @@
 					}]
 			}">
 			</script>
+			
+		<script type="text/javascript" src="js/script.js"></script>
 		
 		<link rel="stylesheet" href="style.css">
 
     </head>
     <body>
-        {* include file="navbar.tpl" *}
+        {include file="navbar.tpl"}
+        {include file="upload.tpl"}
         
-        <div class="container">
+        <div class="tab-content">
             {* include the file that is called $page. We set the value of $page in index.php *}
-            {include file="$page.tpl"}
+            {* include file="$page.tpl" *}
+            {include file="trec_eval.tpl"}
+            {include file="info.tpl"}
         </div>
         
     </body>

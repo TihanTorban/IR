@@ -7,76 +7,64 @@ var natural_d = "is effective in finding relevant results, and the quality of th
 
 
 $(document).ready(function (events) {
+
+//	tooltip ========================================================
+	$("[data-tooltip]").mousemove(function (eventObject) {
+        $data_tooltip = $(this).attr("data-tooltip");
+        
+        $("#tooltip").text($data_tooltip)
+                     .css({ 
+                         "top" : eventObject.pageY-40,
+                        "left" : eventObject.pageX+40
+                     })
+                     .show();
+    }).mouseout(function () {
+
+        $("#tooltip").hide()
+                     .text("")
+                     .css({
+                         "top" : 0,
+                        "left" : 0
+                     });
+    });
+//==========================================================
 	
 	//Load the Visualization API and the piechart package.
 	google.load('visualization', '1.0', {'packages':['corechart']});
 
-	var queries = $('#queries');
-	var qrels = $('#qrels');
-	var runs = $('#runs');
-	var close = $('#close');
-	var upload = $('#upload_img');
-	var runs_div = $("#runs_a_b");
-	var trec_eval_param = $("#trec_eval_param");
-	
-	runs_div.hide();
-	$("#chart_param").hide();
-	
-	getCollections();
-	
-	$("#collection_sett").change(function(){
-		if ($(this).val() !=-1){
-			getRuns($("#collection_sett").val(), id_user);
-			$("#runs_a_b").show();
-		}else{
-			$("#runs_a_b").hide();
-		}
-	});
-	
-	upload.click(function(){
-		$(".popup").css('visibility', 'visible');
-	});
-	
+//	UPLOAD =====================================================
+	var upload_queries = $('#upload_queries');
+	var upload_qrels = $('#upload_qrels');
+	var upload_runs = $('#upload_runs');
+	var close = $('.close');
+
 	close.click(function(){
-		$(".popup").css('visibility', 'hidden');
-		document.getElementById("qrels").disabled = true;
-		document.getElementById("runs").disabled = true;
-		document.getElementById("upload").disabled = true;
+		document.getElementById("upload_qrels").disabled = true;
+		document.getElementById("upload_runs").disabled = true;
+		document.getElementById("upload_upload").disabled = true;
 		$("#status").html("");
 	});
 	
-	queries.change(function(){
-		document.getElementById("qrels").disabled = false;
+	upload_queries.change(function(){
+		document.getElementById("upload_qrels").disabled = false;
 		$("#status").html("");
 	});
 	
-	qrels.change(function(){
-		document.getElementById("runs").disabled = false;
+	upload_qrels.change(function(){
+		document.getElementById("upload_upload").disabled = false;
 		$("#status").html("");
 	});
 
-	runs.change(function(){
-		document.getElementById("upload").disabled = false;
+	upload_runs.change(function(){
+		document.getElementById("upload_sett").disabled = false;
 		$("#status").html("");
 	});
 	
-	trec_eval_param.change(function(){
-		var param = $("#trec_eval_param").val();
-		var order = $('input:radio[name="order"]:checked').val();
-		drawChart(data_eval, param, order);
-	});
-	
-	$('input:radio[name="order"]').change(function(){
-		var param = $("#trec_eval_param").val();
-		var order = $('input:radio[name="order"]:checked').val();
-		drawChart(data_eval, param, order);
-	});
-
 	$("#upload_files").on('submit',(function(e) {
 		e.preventDefault();
 		
 		$("#status").html("");
-		document.getElementById("upload").disabled = true;
+		document.getElementById("upload_sett").disabled = true;
 		
 		var data = new FormData();
 		
@@ -85,11 +73,11 @@ $(document).ready(function (events) {
 			data.append('id_user', 1);
 			
 			data.append('collection_name', $('#collection_name').val());
-			data.append('file-queries', queries[0].files[0]);
-			data.append('file-qrels', qrels[0].files[0]);
+			data.append('file-queries', upload_queries[0].files[0]);
+			data.append('file-qrels', upload_qrels[0].files[0]);
 			
-			if (runs) {
-				$(runs).each(function () {
+			if (upload_runs) {
+				$(upload_runs).each(function () {
 					var i = 0;
 			        $(this.files).each(function () {
 			        	data.append('file-runs-'+i, this);
@@ -117,83 +105,73 @@ $(document).ready(function (events) {
 		}
 		
 	}));
-
-	$("#runs_a").change(function(){
-		if ( $("#runs_a").val() > -1){
-			var run_id = $("#runs_a").val();
-			var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
-
-			var avrRecal = getAVRparam(run_id, 'recall');
-			
-			if (avrMAP['id']<avrMAP['avrColl']){
-				if(avrRecal['id']<avrRecal['avrColl']){
-					$result = natural_a;
-				}else{
-					$result = natural_c;
-				}
-			}else{
-				if(avrRecal['id']<avrRecal['avrColl']){
-					$result = natural_b;
-				}else{
-					$result = natural_d;
-				}
-			}
-			
-			$(".naturalLG#a").append("<br/><b>"+$("#runs_a option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
-		}else{
+//==========================================================================
+// show data================================================================	
+	var runs_div = $(".runs_a_b");
+	var trec_eval_param = $("#trec_eval_param");
+	
+	runs_div.hide();
+	$(".coll_sett").hide();
+	
+	getCollections();
+	
+	$("#collection_sett").change(function(){
+		if ($(this).val() !=-1){
+			getRuns($("#collection_sett").val(), id_user);
+			$(".runs_a_b").show();
+			$(".naturalLG").hide();
 			$(".naturalLG#a").empty();
-		}
-	});
-
-	$("#runs_b").change(function(){
-		if ( $("#runs_b").val() > -1){
-			var run_id = $("#runs_b").val();
-			var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
-
-			var avrRecal = getAVRparam(run_id, 'recall');
-			
-			if (avrMAP['id']<avrMAP['avrColl']){
-				if(avrRecal['id']<avrRecal['avrColl']){
-					$result = natural_a;
-				}else{
-					$result = natural_c;
-				}
-			}else{
-				if(avrRecal['id']<avrRecal['avrColl']){
-					$result = natural_b;
-				}else{
-					$result = natural_d;
-				}
-			}
-			
-			$(".naturalLG#b").append("<br/><b>"+$("#runs_b option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
-		}else{
 			$(".naturalLG#b").empty();
+		}else{
+			$(".coll_sett").hide();
 		}
 	});
 	
+	$("#runs_a").change(function(){
+		setNLG('a');
+	});
+	
+	$("#runs_b").change(function(){
+		setNLG('b');
+	});
+    
+    $(document).on('click', '.compareQrels', function () {
+    	$( 'span' ).removeClass( 'highlightSingle highlightPair' );
+    	id = $(this).attr('class').split(' ').pop();
+    	console.log($("."+id).length);
+    	console.log($("."+id));
+    	if ($("."+id).length > 2){
+    		$("."+id).addClass('highlightPair');
+    	}else{
+    		$("."+id).addClass('highlightSingle');
+    	};
+    	
+    });
+    
+// PLOT =======================================================================
+    
     $("#submit_compare").click(function(){
     	if ( $("#runs_a").val() > -1 && $('#runs_b').val() > -1){
     		getTrec_eval();
+    		$('.chart').show();
     	}
     });
     
-    $(document).on('click', '.compareQrels', function () {
-    	id = $(this).attr('id');
-    	$( 'span' ).removeClass( 'highlight' );
-    	$("#"+id).addClass('highlight');
-    });
+    trec_eval_param.change(function(){
+		var param = $("#trec_eval_param").val();
+		var order = $('input:radio[name="order"]:checked').val();
+		drawChart(data_eval, param, order);
+	});
+	
+	$('input:radio[name="order"]').change(function(){
+		var param = $("#trec_eval_param").val();
+		var order = $('input:radio[name="order"]:checked').val();
+		drawChart(data_eval, param, order);
+	});
+
     
 });
 
-function compareSecondColumn(a, b) {
-    if (a[1] === b[1]) {
-        return 0;
-    }
-    else {
-        return (a[1] > b[1]) ? -1 : 1;
-    }
-}
 
 //==GET COLLECTIONs FROM DB=============================================================
 function getCollections(){
@@ -401,7 +379,6 @@ function drawChart(data_eval, param, order){
 		};
 
 	var chart = new google.visualization.LineChart(document.getElementById("plot"));
-	$("#chart_param").show();
 	chart.draw(data, options);
 
 //=============================================================================
@@ -445,13 +422,12 @@ function drawChart(data_eval, param, order){
 				$.each(runValues_a, function(index, value) {
 					doc_arr = value.doc_id.split("/");
 					doc_name = decodeURI($(doc_arr).get(-1));
+					docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\ \"]/g, '');
 					if (value.relevant > 0){
-						$(".trec_eval_data#a").append("<br/><span class='compareQrels relevant' id='"+doc_name+"'>" + 
-								  							value.doc_id + 
+						$(".trec_eval_data#a").append("<br/><span class='compareQrels relevant "+docClass+"'>" +doc_name+ 
 							  							"</span>");
 					}else{
-						$(".trec_eval_data#a").append("<br/><span class='compareQrels' id='"+doc_name+"'>" + 
-								  							value.doc_id + 
+						$(".trec_eval_data#a").append("<br/><span class='compareQrels "+docClass+"'>" +doc_name+ 
 							  							"</span>");
 					}
 				});
@@ -475,16 +451,15 @@ function drawChart(data_eval, param, order){
 				$.each(runValues_b, function(index, value) {
 					doc_arr = value.doc_id.split("/");
 					doc_name = decodeURI($(doc_arr).get(-1));
+					docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\ \"]/g, '');
 					if (value.relevant > 0){
-						$(".trec_eval_data#b").append("<br/><span class='compareQrels relevant' id='"+doc_name+"'>" + 
-							  							value.doc_id + "</span>");
+						$(".trec_eval_data#b").append("<br/><span class='compareQrels relevant "+docClass+"'>" + doc_name + "</span>");
 					}else{
-						$(".trec_eval_data#b").append("<br/><span class='compareQrels' id='"+doc_name+"'>" + 
-							  							value.doc_id + "</span>");
+						$(".trec_eval_data#b").append("<br/><span class='compareQrels "+docClass+"'>" + doc_name + "</span>");
 					}
 				});
 			});
-	
+			$(".trec_eval_data").show();
 		}
 	}
 }
@@ -492,7 +467,7 @@ function drawChart(data_eval, param, order){
 function getAVRparam(run_id, param){
 	var id_collection = $("#collection_sett").val();
 	var avr;
-	console.log(id_collection);
+
 	$.ajax({
 		url: 'getData.php?data=avgParam&param='+param+'&id_user='+id_user+'&id_run='+run_id+'&id_collection='+id_collection,			// Url to which the request is send
 		type: "GET",				// Type of request to be send, called as method
@@ -506,20 +481,34 @@ function getAVRparam(run_id, param){
 			avr = JSON.parse(data);
 		}
 	});
-//	
-//	$.get("getData.php",
-//			{
-//				data : "avgParam",
-//				param: param,
-//				id_user: id_user,
-//				id_run: run_id,
-//				id_collection: id_collection
-//			}
-//	)
-//	.done(function(data, status){
-//		avr = JSON.parse(data);
-//
-//	});
-//	alert(avr);
 	return avr;
+}
+
+function setNLG(id){
+	if ( $("#runs_"+id).val() > -1){
+		var run_id = $("#runs_"+id).val();
+		var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
+
+		var avrRecal = getAVRparam(run_id, 'recall');
+		
+		if (avrMAP['id']<avrMAP['avrColl']){
+			if(avrRecal['id']<avrRecal['avrColl']){
+				$result = natural_a;
+			}else{
+				$result = natural_c;
+			}
+		}else{
+			if(avrRecal['id']<avrRecal['avrColl']){
+				$result = natural_b;
+			}else{
+				$result = natural_d;
+			}
+		}
+		$(".naturalLG#"+id).empty();
+		$(".naturalLG#"+id).append("<br/><b>"+$("#runs_"+id+" option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
+		$(".naturalLG").show();
+	}else{
+		$(".naturalLG").hide();
+		$(".naturalLG#"+id).empty();
+	}
 }
