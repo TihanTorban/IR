@@ -22,14 +22,6 @@ class Runs{
 		return $this;
 	}
 	
-	public function __construct_1(mysqli $conn, Collection $collection, $id_user){
-		$this->db = $conn;
-		$this->id_user = $id_user;
-		$this->collection = $collection;
-		
-		return $this;
-	}
-	
 	public function getData(){
 		return $this->runs;
 	}
@@ -113,11 +105,13 @@ class Runs{
 		
 	}
 	
-	public function setRunsFromFile( array $file, $separator = " ", array $file_headers=array()){
+	public function setRunsFromFile(Query $query, array $file, $separator = " ", array $file_headers=array()){
 		
-		if (isset( $file['name']) &  isset($file['tmp_name']) &&  empty($file['error'])){
+		if (isset( $file['name']) && isset($file['tmp_name']) &&  empty($file['error'])){
 			
 			$file_headers = empty($file_headers) ? $this->file_headers : $file_headers;
+			
+			$queries = $query->getQueries();
 			
 			if (file_exists($file['tmp_name']) && is_readable($file['tmp_name'])) {
 				$fh = fopen($file['tmp_name'], "r");
@@ -142,6 +136,14 @@ class Runs{
 								$runk 			= $this->db->real_escape_string(intval(full_trim($arr[3])));
 								$score 			= $this->db->real_escape_string(floatval(full_trim($arr[4])));
 
+								if ( isset($queries[$id_query]) ){
+									$id_query = $queries[$id_query]['id'];
+								}else{
+									fclose($fh);
+									throw new Exception("Wrong data in a RUN file: ".$file['name'].". There is no ID_QUERY=". $id_query .
+											" in the QUERIES file");
+								}
+								
 								if ($i < 1000){
 									if ($i == 0 ){
 										

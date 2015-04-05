@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 23:50:59
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-05 13:18:27
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:83164565354ef9f9c23f866-60064323%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '7941f6f864ba7ae69577d90a7026010e1af2dfd5' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl',
-      1 => 1428097851,
+      1 => 1428232675,
       2 => 'file',
     ),
   ),
@@ -22,6 +22,21 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 <?php if ($_valid && !is_callable('content_54ef9f9c25a334_67469356')) {function content_54ef9f9c25a334_67469356($_smarty_tpl) {?><div class="tab-pane fade in active" id="evaluation">
 	<div class="row coll_sett runs_a_b">
 		<div class="col-md-5 col-sm-6 col-xs-12">
+			
+			
+			<div class="dropdown" id="myDropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropdown trigger<span class="caret"></span></a>
+			
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="item" value="value">Действие</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Другое действие</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Что-то еще</a></li>
+					<li role="presentation" class="divider"></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Отдельная ссылка</a></li>
+				</ul>
+			</div>
+			
+			
 			<label>RUNs A</label>
 			<select name="runs_a" id="runs_a"></select>
 		</div>
@@ -71,11 +86,5 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 			<div class='trec_eval_data' id="b"></div>
 		</div>
 	</div>
-	
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<div id="tooltip"></div>
-	
-</div>	<?php }} ?>
+
+</div><?php }} ?>

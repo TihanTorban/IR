@@ -1,5 +1,6 @@
 var id_user = 1;
-var data_eval = [];
+var trec_eval = [];
+
 var natural_a = "is weak in finding relevant results, and the quality of the retrieved results is low. Therefore, this method is generally not recommended, unless specific reasons warrant its use.";
 var natural_b = "is effective in retrieving relevant results, but generally the quality of the retrieved documents is low. Therefore, this method is acceptable for queries where it is desirable to find as many relevant documents as possible.";
 var natural_c = "is weak in finding relevant results in the pool of data, but the returned results are generally of high quality. Therefore, this method is acceptable for queries where the quality of the retrieved documents is more important than the number of relevant documents retrieved.";
@@ -9,24 +10,12 @@ var natural_d = "is effective in finding relevant results, and the quality of th
 $(document).ready(function (events) {
 
 //	tooltip ========================================================
-	$("[data-tooltip]").mousemove(function (eventObject) {
-        $data_tooltip = $(this).attr("data-tooltip");
-        
-        $("#tooltip").text($data_tooltip)
-                     .css({ 
-                         "top" : eventObject.pageY-40,
-                        "left" : eventObject.pageX+40
-                     })
-                     .show();
-    }).mouseout(function () {
-
-        $("#tooltip").hide()
-                     .text("")
-                     .css({
-                         "top" : 0,
-                        "left" : 0
-                     });
-    });
+	$("a.item").on("click", function(e){
+		e.preventDefault();
+		
+		c = $(this).attr("class");
+		console.log(c);
+	});
 //==========================================================
 	
 	//Load the Visualization API and the piechart package.
@@ -51,7 +40,7 @@ $(document).ready(function (events) {
 	});
 	
 	upload_qrels.change(function(){
-		document.getElementById("upload_upload").disabled = false;
+		document.getElementById("upload_runs").disabled = false;
 		$("#status").html("");
 	});
 
@@ -97,7 +86,17 @@ $(document).ready(function (events) {
 				success: function(data)		// A function to be called if request succeeds
 				{
 					$("#status").html("<img src='./img/accept-db.png' id='ok_img' alt='Upload' height='32' width='32'/>");
-					getCollections();
+					
+					console.log(data);
+					
+					var reply = JSON.parse(data);
+
+					if (!(typeof( reply ) !== "undefined" && reply) ){
+						console.log(reply);
+					}else{
+						getCollections();
+					}
+					
 				}
 			});
 		}else{
@@ -160,13 +159,13 @@ $(document).ready(function (events) {
     trec_eval_param.change(function(){
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
-		drawChart(data_eval, param, order);
+		drawChart(trec_eval, param, order);
 	});
 	
 	$('input:radio[name="order"]').change(function(){
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
-		drawChart(data_eval, param, order);
+		drawChart(trec_eval, param, order);
 	});
 
     
@@ -208,7 +207,7 @@ function getRuns(id_collection, id_user){
 				id_collection: id_collection}, 
 			function(data, status){
 		
-				var runs =JSON.parse(data);
+				var runs = JSON.parse(data);
 		
 				if ( !(typeof data['error'] !== "undefined" && data['error'])) {
 					$("#runs_a").empty();
@@ -245,34 +244,14 @@ function getTrec_eval(){
 	.done(function(data, status){
 		trec_eval = JSON.parse(data);
 		
-		data_eval = [];
-		$.each(trec_eval, function(run_id, run_val) {
-			if ( !(typeof( data_eval[run_id] ) !== "undefined" && data_eval[run_id]) ) {
-		    	data_eval[run_id] = [];
-		    }
-
-			$.each(run_val, function(index, value) {
-				$.each(value, function(eval_id, val) {
-				    if ( !(typeof( data_eval[run_id][eval_id] ) !== "undefined" && data_eval[run_id][eval_id]) ) {
-				    	data_eval[run_id][eval_id] = [];
-				    }
-				    if ( !(typeof( data_eval[run_id][eval_id][index] ) !== "undefined" && data_eval[run_id][eval_id][index]) ) {
-						data_eval[run_id][eval_id][index] = [];
-					}
-				    
-					data_eval[run_id][eval_id][index] = val;
-				});
-			});
-		});
-		
 	//================================================================
 		
 		$("#trec_eval_param").empty();
 		
-		for (var run_id in data_eval) {
-			for (var eval_id in data_eval[run_id]) {
-				if(eval_id != 'runid'){
-					$("#trec_eval_param").append("<option value='"+eval_id+"' >"+eval_id+"</option>");
+		for (var run_id in trec_eval) {
+			for (var param in trec_eval[run_id]['value']) {
+				if(param != 'runid'){
+					$("#trec_eval_param").append("<option value='"+param+"' >"+param+"</option>");
 				}
 			}
 			break;
@@ -283,7 +262,7 @@ function getTrec_eval(){
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
 		
-		drawChart(data_eval, param, order);
+		drawChart(trec_eval, param, order);
 		
 	});
 }
@@ -294,17 +273,10 @@ function getTrec_eval(){
  * draws it.
  */
 function drawChart(data_eval, param, order){
-	var runs_id = ['A', 'B'];
-	var i = 0;
-	for (var id in data_eval){
-		runs_id[i++] = id;	
-	}
 	
-	var run_id_a = $("#runs_a").val();
-	var run_id_b = $("#runs_b").val();
-	var run_name_a = runs_id[0];
-	var run_name_b = runs_id[1];
 	var id_collection = $("#collection_sett").val();
+	
+	var run_name = [];
 	
 	var data_tail = [];
 	var data_not_ordered = [];
@@ -316,12 +288,13 @@ function drawChart(data_eval, param, order){
 	
 	var i = 0;
 	
-	for (var run_id in data_eval) {
-		for (var query_id in data_eval[run_id][param]) {
+	$.each(data_eval, function(run_id, trec_eval){
+		run_name[run_name.length] = trec_eval['run_name'];
+		$.each(trec_eval['value'][param], function(query_id, val){
 			if ( i == 0 ){
-				v_a[query_id] = parseFloat(data_eval[run_id][param][query_id]);
+				v_a[query_id] = parseFloat(val['value']);
 			}else{
-				v_b = parseFloat(data_eval[run_id][param][query_id]);
+				v_b = parseFloat(val['value']);
 				v_d = v_a[query_id] - v_b;
 				v[1][v[1].length] = {value: v_a[query_id], query_id: query_id};
 				v[2][v[2].length] = {value: v_b, query_id: query_id};
@@ -329,9 +302,10 @@ function drawChart(data_eval, param, order){
 				
 				data_not_ordered[data_not_ordered.length] = [query_id, v_a[query_id], v_b, v_d];
 			}
-		}
+		});
 		i++;
-	}
+	});
+	
 //	ordering of data ====================================================================
 	if (order == 4){
 		v[1].sort(function(a, b){
@@ -357,14 +331,14 @@ function drawChart(data_eval, param, order){
 //=======================================================================================	
 
 	
-	$("span#run_name_a").text(run_name_a);
-	$("span#run_name_b").text(run_name_b);
-	$("span#run_name_d").text("Diff(" + run_name_a + " - " + run_name_b + ")");
+	$("span#run_name_a").text(run_name[0]);
+	$("span#run_name_b").text(run_name[1]);
+	$("span#run_name_d").text("Diff(" + run_name[0] + " - " + run_name[1] + ")");
 	
 	var data = new google.visualization.DataTable();
 	data.addColumn('string', 'ID');
-	data.addColumn('number', run_name_a);
-	data.addColumn('number', run_name_b);
+	data.addColumn('number', run_name[0]);
+	data.addColumn('number', run_name[1]);
 	data.addColumn('number', 'Diff');
 	
 	data.addRows(data_tail);
@@ -408,7 +382,7 @@ function drawChart(data_eval, param, order){
 				{
 					data : "run_values",
 					id_user: id_user,
-					id_run: run_id_a,
+					id_run: run_name[0]['id_run'],
 					id_query: id_query,
 					id_collection: id_collection
 				}
@@ -416,7 +390,10 @@ function drawChart(data_eval, param, order){
 			.done(function(data, status){
 
 				runValues_a = JSON.parse(data);
-				$(".trec_eval_data#a").append("<b>RUN: </b>"+run_name_a+"; ");
+				
+				console.log(runValues_a);
+				
+				$(".trec_eval_data#a").append("<b>RUN: </b>"+run_name[0]+"; ");
 				$(".trec_eval_data#a").append("<b>Query id: </b>"+id_query);
 				
 				$.each(runValues_a, function(index, value) {
@@ -437,7 +414,7 @@ function drawChart(data_eval, param, order){
 				{
 					data : "run_values",
 					id_user: id_user,
-					id_run: run_id_b,
+					id_run: run_name[1]['id_run'],
 					id_query: id_query,
 					id_collection: id_collection
 				}
@@ -445,7 +422,7 @@ function drawChart(data_eval, param, order){
 			.done(function(data, status){
 				
 				runValues_b = JSON.parse(data);
-				$(".trec_eval_data#b").append("<b>RUN:</b> "+run_name_b+"; ");
+				$(".trec_eval_data#b").append("<b>RUN:</b> "+run_name[1]+"; ");
 				$(".trec_eval_data#b").append("<b>Query id:</b> "+id_query);
 				
 				$.each(runValues_b, function(index, value) {

@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 23:04:31
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-05 11:38:17
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/info.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:1661578702551eff9da990e5-45592623%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'b2ddc556a115c0104c18f776fc1af518fd5a0dd3' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/info.tpl',
-      1 => 1428095065,
+      1 => 1428226023,
       2 => 'file',
     ),
   ),
@@ -51,4 +51,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 		P500           	Precision after 500 docs retrieved
 		P1000          	Precision after 1000 docs retrieved
 	</pre>
-</div><?php }} ?>
+</div>
+
+<?php }} ?>

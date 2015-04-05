@@ -60,6 +60,7 @@ function error_msg($text, Collection $collection=NULL) {
 	if (isset($collection)){
 		try {
 			$collection->deleteCollection();
+			$mysql->close();
 		} catch (Exception $e) {
 			$err_mesage['error'][] = "Exception: {$e->getMessage()}".PHP_EOL;
 			$result = json_encode($err_mesage);

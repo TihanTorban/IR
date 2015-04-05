@@ -3,6 +3,7 @@ class Qrels{
 	private $db;
 	private $id_user;
 	private $collection;
+	private $id_collection;
 	
 	/*	
 	 * The format of a qrels file is as follows:
@@ -25,18 +26,20 @@ class Qrels{
 	 * $collection - Collection object
 	 * $file_qrels - is an array of type $_FILES['file-name']
 	*/
-	public function __construct(Collection $collection, $id_user) {
+	public function __construct(mysqli $conn, $collection, $id_user) {
 
 		$this->id_user = $id_user;
-		$this->collection = $collection;
-		$this->db = $collection->getDBConnection();
+		$this->id_collection = $collection;
+		$this->db = $conn;
 	
 		return $this;
 	}
 	
-	public function setQrelsFromFile(array $file, $separator = "\t", array $file_headers=array()) {
+	public function setQrelsFromFile(Query $query, array $file, $separator = "\t", array $file_headers=array()) {
 		
 		$file_headers = empty($file_headers) ? $this->file_headers : $file_headers;
+		
+		$queries = $query->getQueries();
 		
 		if ($file['error'] == 0){
 
@@ -51,13 +54,21 @@ class Qrels{
 						if (!feof($fh)){
 							$arr = explode($separator, $line);
 							if (count($arr) == count($file_headers)){
-								if (!is_array($this->collection->getId())){
-									$id_collection 	= $this->db->real_escape_string($this->collection->getId());
+								if (!is_array($this->id_collection)){
+									$id_collection 	= $this->db->real_escape_string($this->id_collection);
 								}
 								
-								$id_query 		= $this->db->real_escape_string(full_trim($arr[0]));
-								$doc_id 		= $this->db->real_escape_string(full_trim($arr[2]));
-								$relevant 		= $this->db->real_escape_string(intval(full_trim($arr[3])));
+								$id_query	= $this->db->real_escape_string(full_trim($arr[0]));
+								$doc_id 	= $this->db->real_escape_string(full_trim($arr[2]));
+								$relevant 	= $this->db->real_escape_string(intval(full_trim($arr[3])));
+								
+								if ( isset($queries[$id_query]) ){
+									$id_query = $queries[$id_query]['id'];
+								}else{
+									fclose($fh);
+									throw new Exception("Wrong data in a QRELS file. The is no ID_QUERY=". $id_query .
+											" in the QUERIES file");
+								}
 								
 								if ($i == 0 ){
 									$query = "INSERT INTO qrels (id_collection, id_query, doc_id, relevant)".
@@ -102,34 +113,8 @@ class Qrels{
 		}
 	}
 	
-// 	private function setQrelsFromFileToArr($file, $fileName){
-// 		/*	The format of a qrels file is as follows:
-		
-// 		TOPIC      ITERATION      DOCUMENT#      RELEVANCY
-		
-// 		where TOPIC is the topic number,
-// 		ITERATION is the feedback iteration (almost always zero and not used),
-// 		DOCUMENT# is the official document number that corresponds to the "docno" field in the documents, and
-// 		RELEVANCY is a binary code of 0 for not relevant and 1 for relevant.
-// 		*/
-		
-// 		$headers_qrels = array("id_query", "ITERATION", "DOCUMENT", "RELEVANCY");			//qrels file
-		
-// 		$qrels = txtToAssocArr($file, "\t", 0, $headers_qrels);
-		
-// 		if (!$qrels){
-// 			throw new Exception("Wrong format of a QRELS file: $fileName " .
-// 					". The format of a qrels file is as follows:" .
-// 					" ID_QUERY &nbsp ITERATION &nbsp DOCUMENT &nbsp RELEVANCY");
-// 		}
-		
-// 		$this->qrels = $qrels;
-		
-// 		return true;
-// 	}
-	
 	public function setQrel($id_query, $doc_id, $relevant){
-		$id_collection 	= $this->db->real_escape_string($this->collection->getId());
+		$id_collection 	= $this->db->real_escape_string($this->id_collection);
 		$id_query 		= $this->db->real_escape_string($id_query);
 		$doc_id 		= $this->db->real_escape_string($doc_id);
 		$relevant 		= $this->db->real_escape_string(intval($relevant));

@@ -1,6 +1,21 @@
 <div class="tab-pane fade in active" id="evaluation">
 	<div class="row coll_sett runs_a_b">
 		<div class="col-md-5 col-sm-6 col-xs-12">
+			
+			
+			<div class="dropdown" id="myDropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropdown trigger<span class="caret"></span></a>
+			
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="item" value="value">Действие</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Другое действие</a></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Что-то еще</a></li>
+					<li role="presentation" class="divider"></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Отдельная ссылка</a></li>
+				</ul>
+			</div>
+			
+			
 			<label>RUNs A</label>
 			<select name="runs_a" id="runs_a"></select>
 		</div>
@@ -50,11 +65,5 @@
 			<div class='trec_eval_data' id="b"></div>
 		</div>
 	</div>
-	
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<span data-tooltip="hint">url</span><br/>
-	<div id="tooltip"></div>
-	
-</div>	
+
+</div>

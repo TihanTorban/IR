@@ -15,7 +15,7 @@ class Collection{
 	 * $collection - name of the new collection 
 	 * or id of the exist in DB collection
 	 */
-	public function __construct($conn, $id_user) {
+	public function __construct(mysqli $conn, $id_user) {
 		$this->db = $conn;
 		$this->id_user = $id_user;
 		

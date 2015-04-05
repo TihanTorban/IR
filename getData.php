@@ -71,9 +71,8 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 						$trec_eval_a = new Trec_eval($mysql, $id_user, $_GET["run_id_a"]);
 						$trec_eval_b = new Trec_eval($mysql, $id_user, $_GET["run_id_b"]);
 						
-						$a = $trec_eval_a->getTrecEval();
-						$b = $trec_eval_b->getTrecEval();
-						$result = array_merge($a, $b);
+						$result[$_GET["run_id_a"]] = $trec_eval_a->getTrecEval();
+						$result[$_GET["run_id_b"]] = $trec_eval_b->getTrecEval();
 						
 					}else{
 						error_msg("Not inaf data".PHP_EOL);

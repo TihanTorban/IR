@@ -74,8 +74,14 @@ if ( 	isset($_POST['id_user']) &&
 
 		if (isset($collection)){
 			try {
-				$queries = new Query($collection, $_POST['id_user']);
-				isset($queries) ? $queries->setQueriesFromFile($_FILES['file-queries']) : $err_mesage[] = "Query not added";
+				$id_collection = $collection->getId();
+				$queries = new Query($mysql, $id_collection, $_POST['id_user']);
+				if( isset($queries) ){
+					$queries->setQueriesFromFile($_FILES['file-queries']);
+				}else {
+					error_msg("Query not added".PHP_EOL, $collection);
+				}
+
 			} catch (Exception $e) {
 				error_msg("Exception: {$e->getMessage()}".PHP_EOL, $collection);
 			}
@@ -88,8 +94,12 @@ if ( 	isset($_POST['id_user']) &&
 
 		if (isset($queries)){
 			try {
-				$qrels = new Qrels($collection, $_POST['id_user']);
-				isset($qrels) ? $qrels->setQrelsFromFile($_FILES['file-qrels']) : $err_mesage[] = "Qrels not added";
+				$qrels = new Qrels($mysql, $id_collection, $_POST['id_user']);
+				if( isset($qrels) ){
+					$qrels->setQrelsFromFile($queries, $_FILES['file-qrels']);
+				}else {
+					error_msg("Qrels not added".PHP_EOL, $collection);
+				}
 			} catch (Exception $e) {
 				error_msg("Exception: {$e->getMessage()}".PHP_EOL, $collection);
 			}
@@ -115,13 +125,12 @@ if ( 	isset($_POST['id_user']) &&
 			foreach ($_FILES as $key => $value){
 				if (strpos($key, 'file-runs-') !== FALSE){
 					try {
-						$id_collection = $collection->getId();
 						$runs = new Runs($mysql, $id_collection , $id_user);
-						$id_run = $runs->setRunsFromFile($_FILES[$key]);
+						$id_run = $runs->setRunsFromFile($queries, $_FILES[$key]);
 
 						if ($id_run){
 							$trec_eval = new Trec_eval($mysql, $id_user, $id_run);
-							$trec_eval->setTrecEvalFromFile($_FILES['file-qrels'], $_FILES[$key]);
+							$trec_eval->setTrecEvalFromFile($queries, $_FILES['file-qrels'], $_FILES[$key]);
 						}else{
 							error_msg("Not posible to add new RUN to DB" .PHP_EOL, $collection);
 						}
@@ -159,38 +168,17 @@ function check($file, $file_headers, $separator){
 					if (count($arr) == count($file_headers)){
 						return true;
 					}else{
-						error_msg("Wrong data format in the file: ". $file['name'] ." .", $collection);
+						error_msg("Wrong data format in the file: ". $file['name'] ." .");
 					}
 				}else{
-					error_msg("Can not open file ".$file['name']." for reading.", $collection);
+					error_msg("Can not open file ".$file['name']." for reading.");
 				}
 			}
 		}else{
-			error_msg("Can not open file ".$file['name']." for reading", $collection);
+			error_msg("Can not open file ".$file['name']." for reading");
 		}
 	}else{
-		error_msg("File ".$file['name']." is corrupted", $collection);
-	}
-								
+		error_msg("File ".$file['name']." is corrupted");
+	}						
 }
-
-// function error_msg($text, $collection=NULL) {
-	
-// 	if (isset($collection)){
-// 		try {
-// 			$collection->deleteCollection();
-// 		} catch (Exception $e) {
-// 			$err_mesage['error'][] = "Exception: {$e->getMessage()}".PHP_EOL;
-// 			$result = json_encode($err_mesage);
-// 			die($result);
-// 		}
-	
-// 	}
-	
-// 	$err_mesage['error'][] = $text;
-// 	$result = json_encode($err_mesage);
-// 	die($result);
-// }
-
-
 ?>

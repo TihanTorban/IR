@@ -3,6 +3,7 @@ class Query{
 	private $db;
 	private $id_user;
 	private $collection;
+	private $id_collection;
 	
 	/*
 	 * 	The `queries.txt` file contains one query per line,
@@ -10,7 +11,7 @@ class Query{
 	*/
 	private $file_headers = array("id_query", "query_text");  	//query file
 
-	private $querys;
+	private $queries;
 
 	/*
 	 * Cerate Query Object
@@ -18,11 +19,11 @@ class Query{
 	 * $collection - Collection object
 	 * $file_queries - is an array of type $_FILES['file-name']
 	 */
-	public function __construct(Collection $collection, $id_user) {
+	public function __construct(mysqli $conn, $id_collection, $id_user) {
 
 		$this->id_user = $id_user;
-		$this->collection = $collection;
-		$this->db = $collection->getDBConnection();
+		$this->id_collection = $id_collection;
+		$this->db = $conn;
 
 		return $this;
 	}
@@ -43,7 +44,7 @@ class Query{
 					"where each line has two tab-separated fields: #queryID and #query_text.");
 		}
 		
-		$this->querys = $queries;
+		$this->queries = $queries;
 		
 		return true;
 	
@@ -70,8 +71,8 @@ class Query{
 								$query_id = $this->db->real_escape_string(full_trim($arr[0]));
 								$query_text = $this->db->real_escape_string(full_trim($arr[1]));
 								
-								if (!is_array($this->collection->getId())){
-									$collection_id = $this->db->real_escape_string($this->collection->getId());
+								if (!is_array($this->id_collection)){
+									$collection_id = $this->db->real_escape_string($this->id_collection);
 								}
 								
 								if ($i == 0 ){
@@ -130,7 +131,7 @@ class Query{
 		
 		$query_id = $this->db->real_escape_string($query_id);
 		$query_text = $this->db->real_escape_string($query_text);
-		$collection_id = $this->db->real_escape_string($this->collection->getId());
+		$collection_id = $this->db->real_escape_string($this->id_collection);
 		
 		$query = "INSERT INTO queries (id_query, id_collection, query_text)".
 					"VALUES ('$query_id', '$collection_id', '$query_text')";
@@ -142,23 +143,34 @@ class Query{
 		}
 	}
 	
+/*
+ * return assoc array $result[$query_id] = array(id=>$id, text=>$query_text);
+ */
+	public function getQueries(){
 	
-	/* public function getQueryByQueryId($query_id){
-	
-	$collection_id = $this->db->real_escape_string($this->collection->getId());
-	
-	$query = "SELECT * FROM queries WHERE id_query = '$query_id' AND id_collection = '$collection_id'";
-	$result = $this->db->query($query);
-	
-	if ($result->num_rows > 0) {
-	$row = $result->fetch_assoc();
-	$this->query_id = $query_id;
-	$this->query_text = $row['query'];
-	} else {
-	return false;
+		if ( isset($this->querys) && !empty($this->querys) ){
+			return $this->querys;
+		}else{
+		
+			$collection_id = $this->db->real_escape_string($this->id_collection);
+			
+			$query = "SELECT * FROM queries WHERE id_collection = '$collection_id'";
+			$result = $this->db->query($query);
+			
+			if ($result->num_rows > 0) {
+				while ($row = $result->fetch_assoc()) {
+					$id = $row['id'];
+					$query_id = $row['id_query'];
+					$query_text = $row['query_text'];
+					$queries[$query_id] = array('id'=>$id, 'text'=>$query_text);
+				}
+			} else {
+				return false;
+			}
+			$this->querys = $queries;
+			return $queries;
+		}
 	}
-	return $row;
-	} */
 	
 	public function __toString(){
 		return "Collection with ID=$this->collection_id and $this->query_id hawe QUERY=$this->query_text".PHP_EOL;
