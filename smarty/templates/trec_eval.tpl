@@ -1,30 +1,19 @@
 <div class="tab-pane fade in active" id="evaluation">
 	<div class="row coll_sett runs_a_b">
-		<div class="col-md-5 col-sm-6 col-xs-12">
-			
-			
-			<div class="dropdown" id="myDropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropdown trigger<span class="caret"></span></a>
-			
-				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="item" value="value">Действие</a></li>
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Другое действие</a></li>
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Что-то еще</a></li>
-					<li role="presentation" class="divider"></li>
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Отдельная ссылка</a></li>
-				</ul>
-			</div>
-			
-			
-			<label>RUNs A</label>
-			<select name="runs_a" id="runs_a"></select>
-		</div>
-		<div class="col-md-5 col-sm-6 col-xs-12">
-			<label>RUNs B</label>
-			<select name="runs_b" id="runs_b"></select>
-		</div>
-		<div class="col-md-2 col-sm-6 col-xs-12">
-			<input type="button" value="Submit" id="submit_compare">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<ul class="nav nav-pills">
+				<li class="dropdown runs">
+					<button type="button" class="btn btn-default dropdown-toggle a" value=-1 data-toggle="dropdown"><span class="text">Choose metod A</span> <span class="caret"></span></button>
+					<ul class="dropdown-menu a" role="menu"></ul>
+				</li>
+				<li class="dropdown runs">
+					<button type="button" class="btn btn-default dropdown-toggle b" value=-1 data-toggle="dropdown"><span class="text">Choose metod B</span> <span class="caret"></span></button>
+					<ul class="dropdown-menu b" role="menu"></ul>
+				</li>
+				<li class="dropdown runs">
+					<button role="button" value="Submit" id="submit_compare">Compare</button>
+				</li>
+			</ul>
 		</div>
 	</div>
 	
@@ -57,12 +46,12 @@
 		</div>
 	</div>
 	
-	<div class="row coll_sett">
+	<div class="row coll_sett run_data">
 		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data' id="a"></div>
+			<div class='a'></div>
 		</div>
 		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data' id="b"></div>
+			<div class='b'></div>
 		</div>
 	</div>
 

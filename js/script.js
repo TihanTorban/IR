@@ -8,15 +8,6 @@ var natural_d = "is effective in finding relevant results, and the quality of th
 
 
 $(document).ready(function (events) {
-
-//	tooltip ========================================================
-	$("a.item").on("click", function(e){
-		e.preventDefault();
-		
-		c = $(this).attr("class");
-		console.log(c);
-	});
-//==========================================================
 	
 	//Load the Visualization API and the piechart package.
 	google.load('visualization', '1.0', {'packages':['corechart']});
@@ -30,7 +21,7 @@ $(document).ready(function (events) {
 	close.click(function(){
 		document.getElementById("upload_qrels").disabled = true;
 		document.getElementById("upload_runs").disabled = true;
-		document.getElementById("upload_upload").disabled = true;
+		document.getElementById("upload_sett").disabled = true;
 		$("#status").html("");
 	});
 	
@@ -88,14 +79,8 @@ $(document).ready(function (events) {
 					$("#status").html("<img src='./img/accept-db.png' id='ok_img' alt='Upload' height='32' width='32'/>");
 					
 					console.log(data);
-					
-					var reply = JSON.parse(data);
 
-					if (!(typeof( reply ) !== "undefined" && reply) ){
-						console.log(reply);
-					}else{
-						getCollections();
-					}
+					getCollections();
 					
 				}
 			});
@@ -118,31 +103,40 @@ $(document).ready(function (events) {
 		if ($(this).val() !=-1){
 			getRuns($("#collection_sett").val(), id_user);
 			$(".runs_a_b").show();
-			$(".naturalLG").hide();
-			$(".naturalLG#a").empty();
-			$(".naturalLG#b").empty();
 		}else{
 			$(".coll_sett").hide();
 		}
 	});
 	
-	$("#runs_a").change(function(){
-		setNLG('a');
+	$( document ).on("click", ".a a.run_item", function(e){
+		e.preventDefault();		
+		id = $(this).attr("id");
+		text = $(this).text();
+		
+		$(".runs button.a>span.text").text("A: "+text);
+		$(".runs button.a").val(id);
 	});
 	
-	$("#runs_b").change(function(){
-		setNLG('b');
+	$( document ).on("click", ".b a.run_item", function(e){
+		e.preventDefault();		
+		id = $(this).attr("id");
+		text = $(this).text();
+		
+		$(".runs button.b>span.text").text("B: "+text);
+		$(".runs button.b").val(id);
 	});
     
     $(document).on('click', '.compareQrels', function () {
     	$( 'span' ).removeClass( 'highlightSingle highlightPair' );
-    	id = $(this).attr('class').split(' ').pop();
-    	console.log($("."+id).length);
-    	console.log($("."+id));
-    	if ($("."+id).length > 2){
-    		$("."+id).addClass('highlightPair');
+    	id = $(this).attr('id');
+    	a = $(".run_data .a #"+id).text();
+    	b = $(".run_data .b #"+id).text();
+    	console.log(a+"---"+b+"--id: "+id);
+    	if ( a == b ){
+    		$(".run_data .a #"+id).addClass('highlightPair');
+    		$(".run_data .b #"+id).addClass('highlightPair');
     	}else{
-    		$("."+id).addClass('highlightSingle');
+    		$("#"+id).addClass('highlightSingle');
     	};
     	
     });
@@ -150,8 +144,11 @@ $(document).ready(function (events) {
 // PLOT =======================================================================
     
     $("#submit_compare").click(function(){
-    	if ( $("#runs_a").val() > -1 && $('#runs_b').val() > -1){
-    		getTrec_eval();
+    	var run_id_a = $(".runs button.a").val();
+		var run_id_b = $(".runs button.b").val();
+		var id_collection = $("#collection_sett").val();
+    	if ( $(".runs button.a").val() > -1 && $('.runs button.b').val() > -1){
+    		getTrec_eval(run_id_a, run_id_b, id_collection);
     		$('.chart').show();
     	}
     });
@@ -174,13 +171,10 @@ $(document).ready(function (events) {
 
 //==GET COLLECTIONs FROM DB=============================================================
 function getCollections(){
-	$.get("getData.php", {
-							data : "collections",
-							id_user : "1"
-							}, 
+	$.get("getData.php", {data : "collections",	id_user : "1"}, 
 		function(data, status){
 
-			var collections =JSON.parse(data);
+			var collections = JSON.parse(data);
 	
 			if (typeof collections['error'] == "Undefined" || !collections['error']) {
 				$("#collection_sett").empty();
@@ -210,28 +204,46 @@ function getRuns(id_collection, id_user){
 				var runs = JSON.parse(data);
 		
 				if ( !(typeof data['error'] !== "undefined" && data['error'])) {
-					$("#runs_a").empty();
-					$("#runs_b").empty();
 					
-					$("#runs_a").append("<option value='-1' >Choose metod A</option>");
-					$("#runs_b").append("<option value='-1' >Choose metod B</option>");
+					$('.runs ul').empty();
 					
 					$.each(runs['run_names'], function( id_runs, value ) {
-						$("#runs_a").append("<option value='"+id_runs+"' >" + value['name'] + "</option>");
-						$("#runs_b").append("<option value='"+id_runs+"' >" + value['name'] + "</option>");
+						var nlg = setNLG_(id_runs);
+						
+						$('.runs ul.a').prepend(
+							"<li role='presentation'>"+
+								"<a role='menuitem' " +
+									"tabindex='-1' " +
+									"href='#' " +
+									"data-toggle='tooltip' " +
+									"class='run_item' " +
+									"id='"+id_runs+"' " +
+									"title='"+ value['name'] + " " + nlg +"'>" + 
+									value['name'] + 
+								"</a>"+
+							"</li>"
+						);
+						$('.runs ul.b').prepend(
+							"<li role='presentation'>"+
+								"<a role='menuitem' " +
+									"tabindex='-1' " +
+									"href='#' " +
+									"data-toggle='tooltip' " +
+									"class='run_item' " +
+									"id='"+id_runs+"' " +
+									"title='"+ value['name'] + " " + nlg +"'>" + 
+								value['name'] + 
+								"</a>"+
+							"</li>"
+						);
 					});
-					
 				}
 			}
 	);
 }
 
 //==GET Trec_Eval FROM DB and plot graf of two run======================================================
-function getTrec_eval(){
-	
-	var run_id_a = $("#runs_a").val();
-	var run_id_b = $("#runs_b").val();
-	var id_collection = $("#collection_sett").val();
+function getTrec_eval(run_id_a, run_id_b, id_collection){
 	
 	$.get(	"getData.php", 
 			{ 	data: "compareTwoRun", 
@@ -244,7 +256,7 @@ function getTrec_eval(){
 	.done(function(data, status){
 		trec_eval = JSON.parse(data);
 		
-	//================================================================
+		//================================================================
 		
 		$("#trec_eval_param").empty();
 		
@@ -257,7 +269,7 @@ function getTrec_eval(){
 			break;
 		}
 		
-	//================================================================
+		//================================================================
 		
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
@@ -361,11 +373,11 @@ function drawChart(data_eval, param, order){
 	
 	function selectHandler() {
 
-		$(".trec_eval_data#a").empty();
-		$(".trec_eval_data#b").empty();
+		$(".run_data .a").empty();
+		$(".run_data .b").empty();
 		
 		var selectedItem = chart.getSelection()[0];
-		var runValues_a = null;
+		var runValues = null;
 		
 		if (selectedItem) {
 			var id_query;
@@ -377,66 +389,50 @@ function drawChart(data_eval, param, order){
 			}else{
 				id_query = data.getValue(selectedItem.row, 0);
 			}
-
-			$.get("getData.php",
-				{
-					data : "run_values",
-					id_user: id_user,
-					id_run: run_name[0]['id_run'],
-					id_query: id_query,
-					id_collection: id_collection
-				}
-			) 
-			.done(function(data, status){
-
-				runValues_a = JSON.parse(data);
-				
-				console.log(runValues_a);
-				
-				$(".trec_eval_data#a").append("<b>RUN: </b>"+run_name[0]+"; ");
-				$(".trec_eval_data#a").append("<b>Query id: </b>"+id_query);
-				
-				$.each(runValues_a, function(index, value) {
-					doc_arr = value.doc_id.split("/");
-					doc_name = decodeURI($(doc_arr).get(-1));
-					docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\ \"]/g, '');
-					if (value.relevant > 0){
-						$(".trec_eval_data#a").append("<br/><span class='compareQrels relevant "+docClass+"'>" +doc_name+ 
-							  							"</span>");
-					}else{
-						$(".trec_eval_data#a").append("<br/><span class='compareQrels "+docClass+"'>" +doc_name+ 
-							  							"</span>");
+//----
+			var ids = ["a", "b"];
+			var i = 0;
+			$.each(trec_eval, function(index, value){
+				var id = ids[i];
+				var doc_id = [];
+				$.get("getData.php",
+					{
+						data : "run_values",
+						id_user: id_user,
+						id_run: index,
+						id_query: id_query,
+						id_collection: id_collection
 					}
+				) 
+				.done(function(data, status){
+
+					runValues = JSON.parse(data);
+					
+					console.log(runValues);
+					
+					$(".run_data ."+id).append("<b>RUN: </b>"+run_name[0]+"; ");
+					$(".run_data ."+id).append("<b>Query id: </b>"+id_query);
+					
+					$.each(runValues, function(index, value) {
+						doc_arr = value.doc_id.split("/");
+						doc_name = decodeURI($(doc_arr).get(-1));
+						
+						if  ( !(typeof doc_id[doc_name] !== "undefined")){
+							doc_id[doc_name] = index;
+						};
+//						docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\ \"]/g, '');
+						if (value.relevant > 0){
+							$(".run_data ."+id).append("<br/><span class='compareQrels relevant' id='"+doc_id[doc_name]+"'>" +doc_name+ 
+								  							"</span>");
+						}else{
+							$(".run_data ."+id).append("<br/><span class='compareQrels' id='"+doc_id[doc_name]+"'>" +doc_name+ 
+								  							"</span>");
+						}
+					});
 				});
+				i++;
 			});
-	    		  
-			$.get("getData.php",
-				{
-					data : "run_values",
-					id_user: id_user,
-					id_run: run_name[1]['id_run'],
-					id_query: id_query,
-					id_collection: id_collection
-				}
-			) 
-			.done(function(data, status){
-				
-				runValues_b = JSON.parse(data);
-				$(".trec_eval_data#b").append("<b>RUN:</b> "+run_name[1]+"; ");
-				$(".trec_eval_data#b").append("<b>Query id:</b> "+id_query);
-				
-				$.each(runValues_b, function(index, value) {
-					doc_arr = value.doc_id.split("/");
-					doc_name = decodeURI($(doc_arr).get(-1));
-					docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\ \"]/g, '');
-					if (value.relevant > 0){
-						$(".trec_eval_data#b").append("<br/><span class='compareQrels relevant "+docClass+"'>" + doc_name + "</span>");
-					}else{
-						$(".trec_eval_data#b").append("<br/><span class='compareQrels "+docClass+"'>" + doc_name + "</span>");
-					}
-				});
-			});
-			$(".trec_eval_data").show();
+			$(".run_data").show();
 		}
 	}
 }
@@ -467,25 +463,50 @@ function setNLG(id){
 		var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
 
 		var avrRecal = getAVRparam(run_id, 'recall');
-		
+		var result;
 		if (avrMAP['id']<avrMAP['avrColl']){
 			if(avrRecal['id']<avrRecal['avrColl']){
-				$result = natural_a;
+				result = natural_a;
 			}else{
-				$result = natural_c;
+				result = natural_c;
 			}
 		}else{
 			if(avrRecal['id']<avrRecal['avrColl']){
-				$result = natural_b;
+				result = natural_b;
 			}else{
-				$result = natural_d;
+				result = natural_d;
 			}
 		}
 		$(".naturalLG#"+id).empty();
-		$(".naturalLG#"+id).append("<br/><b>"+$("#runs_"+id+" option:selected").text()+" </b><span class='naturalLG'>" + $result + "</span><hr>");
+		$(".naturalLG#"+id).append("<br/><b>"+$("#runs_"+id+" option:selected").text()+" </b><span class='naturalLG'>" + result + "</span><hr>");
 		$(".naturalLG").show();
 	}else{
 		$(".naturalLG").hide();
 		$(".naturalLG#"+id).empty();
 	}
+	return result;
+}
+
+function setNLG_(id){
+
+	var run_id = id;
+	var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
+	
+	var avrRecal = getAVRparam(run_id, 'recall');
+	var result;
+	if (avrMAP['id']<avrMAP['avrColl']){
+		if(avrRecal['id']<avrRecal['avrColl']){
+			result = natural_a;
+		}else{
+			result = natural_c;
+		}
+	}else{
+		if(avrRecal['id']<avrRecal['avrColl']){
+			result = natural_b;
+		}else{
+			result = natural_d;
+		}
+	}
+		
+	return result;
 }

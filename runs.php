@@ -36,7 +36,7 @@ class Runs{
 		$id_user = $this->db->real_escape_string($this->id_user);
 		$id_collection = $this->db->real_escape_string($this->id_collection);
 	
-		$query = "SELECT R.doc_id, Q.relevant ".
+		$query = "SELECT R.doc_id, Q.relevant, R.id ".
 					"FROM results as R ".
 						"LEFT JOIN qrels as Q ". 
 						"ON R.doc_id = Q.doc_id ".
@@ -53,6 +53,7 @@ class Runs{
 				while ($row = $result->fetch_assoc()) {
 					$run_values[] = array(
 											"doc_id" => $row["doc_id"],
+											"id" => $row["id"],
 											"relevant" => $row["relevant"]
 										);
 				}

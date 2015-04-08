@@ -6,10 +6,10 @@
         
         <!-- jQuery -->
         	<!--script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script-->
-	        <!--script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script-->
+	        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 	        <!--script type="text/javascript" src="./js/ajaxupload.3.5.js"></script-->
 	        
-	        <script type="text/javascript" src="./js/jquery-2.1.3.js"></script>
+	        <!--script type="text/javascript" src="./js/jquery-2.1.3.js"></script-->
                 
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">

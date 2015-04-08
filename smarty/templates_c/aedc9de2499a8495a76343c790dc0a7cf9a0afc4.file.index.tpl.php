@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-03 23:01:17
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-06 10:32:45
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/index.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:552501654ef9f9c032c50-68296638%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'aedc9de2499a8495a76343c790dc0a7cf9a0afc4' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/index.tpl',
-      1 => 1428094875,
+      1 => 1428309161,
       2 => 'file',
     ),
   ),
@@ -27,10 +27,10 @@ $_valid = $_smarty_tpl->decodeProperties(array (
         
         <!-- jQuery -->
         	<!--script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script-->
-	        <!--script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script-->
+	        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 	        <!--script type="text/javascript" src="./js/ajaxupload.3.5.js"></script-->
 	        
-	        <script type="text/javascript" src="./js/jquery-2.1.3.js"></script>
+	        <!--script type="text/javascript" src="./js/jquery-2.1.3.js"></script-->
                 
         <!-- Bootstrap -->
         <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">

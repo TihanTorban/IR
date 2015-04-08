@@ -225,8 +225,11 @@ class Trec_eval{
 		
 		$num_rel = $this->getTrecValue('num_rel', $run);
 		$num_rel_ret = $this->getTrecValue('num_rel_ret', $run);
-		
-		return $num_rel_ret/$num_rel;
+		if (empty($num_rel)){
+			return 0;
+		}else{
+			return $num_rel_ret/$num_rel;
+		}
 		
 	}
 	
