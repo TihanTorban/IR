@@ -1,0 +1,189 @@
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVG(param=num_rel_ret, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVRrecall(coll=43):
+ 	 num_rel 13090
+ 	 num_rel_ret 3005
+getRrecall(run=78):
+ 	 num_rel 13090
+ 	 num_rel_ret 2989
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVG(param=num_rel_ret, coll=43)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVRrecall(coll=43):
+ 	 num_rel 13090
+ 	 num_rel_ret 3005
+getRrecall(run=79):
+ 	 num_rel 13090
+ 	 num_rel_ret 3021
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=80):
+ 	 num_rel 13090
+ 	 num_rel_ret 2810
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=81):
+ 	 num_rel 13090
+ 	 num_rel_ret 2926
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=82):
+ 	 num_rel 13090
+ 	 num_rel_ret 2636
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=83):
+ 	 num_rel 13090
+ 	 num_rel_ret 2914
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=84):
+ 	 num_rel 13090
+ 	 num_rel_ret 2952
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=85):
+ 	 num_rel 13090
+ 	 num_rel_ret 2989
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'
+getAVG(param=num_rel_ret, coll=)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'
+getAVRrecall(coll=):
+ 	 num_rel 13090
+ 	 num_rel_ret 2913
+getAVG(param=num_rel, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVG(param=num_rel_ret, coll=44)
+	 sqlQuery = SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'num_rel_ret' AND  Q.id_query = 'all'AND R.id_collection = '44'
+getAVRrecall(coll=44):
+ 	 num_rel 13090
+ 	 num_rel_ret 2892.5714285714284
+getRrecall(run=86):
+ 	 num_rel 13090
+ 	 num_rel_ret 3021

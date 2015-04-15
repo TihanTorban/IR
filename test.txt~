@@ -1,0 +1,8 @@
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=43)
+	 sqlQuery = SELECT AVG(T.value) FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '43'
+getAVG(param=Mean_Average_Precision, coll=)
+	 sqlQuery = SELECT AVG(T.value) FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'
+getAVG(param=Mean_Average_Precision, coll=42)
+	 sqlQuery = SELECT AVG(T.value) FROM ir.trec_eval AS T INNER JOIN ir.runs AS R ON T.id_run = R.id_run INNER JOIN ir.queries AS Q ON T.id_query = Q.id WHERE T.name = 'Mean_Average_Precision' AND  Q.id_query = 'all'AND R.id_collection = '42'

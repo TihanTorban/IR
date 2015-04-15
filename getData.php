@@ -36,6 +36,8 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 						if (isset($runs)){
 							$result["run_names"] = $runs->getRunsByIdCollection($_GET["id_collection"]);
 						}
+					}else{
+						error_msg("Not inaf data".PHP_EOL);
 					}
 
 				} catch (Exception $e) {
@@ -55,7 +57,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							
 							$result = $run->getRunValueByIdQuery($id_run, $id_query);
 						}else{
-							error_msg("Exception");
+							error_msg("Not inaf data".PHP_EOL);
 						}
 					}
 				
@@ -64,8 +66,51 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 				}
 				break;
 				
+			case "compareTwoRunRel":
 				
-			case "compareTwoRun":
+				try {
+					if ( isset($_GET["run_id_a"]) && isset($_GET["run_id_b"]) && !empty($id_collection) ) {
+						$run_a = new Runs($mysql, $id_collection, $id_user);
+						$run_b = new Runs($mysql, $id_collection, $id_user);
+						
+						$a_id = $_GET["run_id_a"];
+						$b_id = $_GET["run_id_b"];
+						
+						$a = $run_a->getRunValueById( $a_id );
+						$b = $run_b->getRunValueById( $b_id );
+						
+						
+						foreach ($a as $key => $value){
+							$result[$key] = array('common'=>0, $a_id=>0, $b_id=>0);
+							foreach ($value as $k => $v){
+								if ( isset( $b[$key][$k] ) ){
+									$result[$key]['common']++;
+								}else{
+									$result[ $key ][ $a_id ]++;
+								}
+							}
+						}
+						
+						foreach ($b as $key => $value){
+							if ( !isset($result[$key]) ){
+								$result[$key] = array('common'=>0, $a_id=>0, $b_id=>0);
+							}
+							foreach ($value as $k => $v){
+								if ( !isset( $a[$key][$k] ) ){
+									$result[$key][ $b_id ]++;
+								}
+							}
+						}
+					}else{
+						error_msg("Not inaf data".PHP_EOL);
+					}
+				} catch (Exception $e) {
+					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+				}
+				
+				break;
+				
+			case "compareTwoTrecEval":
 				try {
 					if ( isset($_GET["run_id_a"]) && isset($_GET["run_id_b"]) ){
 						$trec_eval_a = new Trec_eval($mysql, $id_user, $_GET["run_id_a"]);
@@ -95,6 +140,8 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							$result['avrColl'] = $trec_eval->getAVG($_GET["param"], $id_collection);
 							$result['id'] = $trec_eval->getTrecValue($_GET["param"], $_GET["id_run"]);
 						}
+					}else{
+						error_msg("Not inaf data".PHP_EOL);
 					}
 				} catch (Exception $e) {
 					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
@@ -103,17 +150,22 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 				break;
 				
 			default:
-				echo "";
+				$result = "";
 				break;
 		}
+		$mysql->close();
+		
+// 		testPrint($result);
+		
+		echo json_encode($result);
+		
 	}catch (Exception $e) {
 		 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
 	}
 }
 
-$mysql->close();
 
-echo json_encode($result);
+
 
 // print_r($result);
 

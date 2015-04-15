@@ -68,6 +68,47 @@ class Runs{
 
 	}
 	
+	public function getRunValueById( $id_run ){
+		
+		$id_collection = $this->db->real_escape_string($this->id_collection);
+		
+		$query_r = "SELECT * FROM ir.results AS R ".
+					"WHERE R.id_run='$id_run' ". 
+						"AND R.id_collection=$id_collection";
+		
+		$query_q = "SELECT * FROM ir.qrels AS Q ".
+					"WHERE Q.relevant>0 ".
+						"AND Q.id_collection=$id_collection";
+		
+		if($result_q = $this->db->query($query_q)){
+			if ($result_q->num_rows > 0) {
+				while ($row_q = $result_q->fetch_assoc()) {
+					$qrels[$row_q["id_query"]][$row_q["doc_id"]] = $row_q["relevant"] ;
+				}
+			} else {
+				return false;
+			}
+		}else{
+			throw new Exception("Can not take data from DB");
+		}
+		
+		if($result_r = $this->db->query($query_r)){
+			if ($result_r->num_rows > 0) {
+				while ($row_r = $result_r->fetch_assoc()) {
+					
+					if ( isset( $qrels[ $row_r["id_query"] ][ $row_r["doc_id"] ]) ){
+						$run_relevant[ $row_r["id_query"] ][$row_r["doc_id"]] = $qrels[ $row_r["id_query"] ][ $row_r["doc_id"] ] ;
+					}
+				}
+			} else {
+				return false;
+			}
+			return $run_relevant;
+		}else{
+			throw new Exception("Can not take data from DB");
+		}
+	}
+	
 	// get runs from db by id_collection
 	public function getRunsByIdCollection($id_collection){
 		

@@ -144,9 +144,13 @@ class Trec_eval{
 					$trec_eval['id_run'] = $id_run;
 					$trec_eval['run_name'] = $run_name;
 					
-					$trec_eval['value'][$param][$id_query]['value'] = $value;
-					$trec_eval['value'][$param][$id_query]['q_name'] = $q_name;
-						
+					if ( $q_name != "all" ){
+						$trec_eval['value'][$param][$id_query]['value'] = $value;
+						$trec_eval['value'][$param][$id_query]['q_name'] = $q_name;
+					}else{
+						$trec_eval['value']["all"][$param]['value'] = $value;
+						$trec_eval['value']["all"][$param]['q_name'] = $q_name;
+					}
 				}
 				
 				return $trec_eval;
@@ -163,15 +167,17 @@ class Trec_eval{
 	public function getAVG($parameter, $collection=null){
 		$id_run = $this->db->real_escape_string($this->id_run);
 		$id_user = $this->db->real_escape_string($this->id_user);
-		$query = "SELECT AVG(t.value) as avr FROM ir.trec_eval as t ".
-					"INNER JOIN runs as r ".
-					"ON t.id_run = r.id_run ".
-					"WHERE  ".
-							"t.name = '$parameter' ".
-						"AND  ".
-							"t.id_query = 'all'"; 
+		
+		$query = "SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T ".
+					"INNER JOIN ir.runs AS R ".
+						"ON T.id_run = R.id_run ".
+					"INNER JOIN ir.queries AS Q ".
+						"ON T.id_query = Q.id ".
+					"WHERE T.name = '$parameter' ".
+						"AND  Q.id_query = 'all'";
+
 		if (!empty($collection)){
-			$query .= "AND r.id_collection = '$collection'";
+			$query .= "AND R.id_collection = '$collection'";
 		}
 		
 		if($result = $this->db->query($query)){
@@ -180,7 +186,7 @@ class Trec_eval{
 		
 				$row = $result->fetch_assoc();
 
-				$avr = $row['avr'];
+				$avr = $row['avg'];
 		
 				return $avr;
 		
@@ -194,15 +200,16 @@ class Trec_eval{
 		$id_run = $this->db->real_escape_string($this->id_run);
 		$id_user = $this->db->real_escape_string($this->id_user);
 		
-		$query = "SELECT value FROM ir.trec_eval ".
-					"WHERE  id_run = '$run' ".
-						"AND ".
-							"name = '$parameter' ".
-						"AND  ".
-							"id_query = 'all'"; 
+		$query = "SELECT value FROM ir.trec_eval AS T ".
+					"INNER JOIN ir.queries AS Q ".
+						"ON T.id_query = Q.id ".
+					"WHERE  T.id_run = '$run' ".
+						"AND T.name = '$parameter' ". 
+						"AND  Q.id_query = 'all'";
+
 		if (!empty($collection)){
 			$query .= "AND id_collection = '$collection'";
-		}
+		};
 		
 		if($result = $this->db->query($query)){
 		
@@ -225,6 +232,7 @@ class Trec_eval{
 		
 		$num_rel = $this->getTrecValue('num_rel', $run);
 		$num_rel_ret = $this->getTrecValue('num_rel_ret', $run);
+		
 		if (empty($num_rel)){
 			return 0;
 		}else{
@@ -237,6 +245,7 @@ class Trec_eval{
 
 		$num_rel = $this->getAVG("num_rel", $collection);
 		$num_rel_ret = $this->getAVG("num_rel_ret", $collection);
+		
 		if (empty($num_rel)){
 			return 0;
 		}
