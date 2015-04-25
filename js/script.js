@@ -1,5 +1,6 @@
 var id_user = 1;
 var trec_eval = [];
+var relevance = [];
 var run_id_a;
 var run_id_b;
 var id_collection;
@@ -102,6 +103,8 @@ $(document).ready(function (events) {
 	
 	$("#collection_sett").change(function(){
 		
+		var collection_id = $("#collection_sett").val();		
+		
 		$(".chart").hide();
 		$(".plot").empty();
 		
@@ -112,10 +115,12 @@ $(document).ready(function (events) {
 		$(".runs button.b").val(-1);
 		
 		if ($(this).val() !=-1){
-			getRuns($("#collection_sett").val(), id_user);
+			getRuns(collection_id, id_user);
 			$(".runs_a_b").show();
+			overview(collection_id);
 		}else{
 			$(".coll_sett").hide();
+			$("#overview").empty();
 		}
 	});
 	
@@ -156,10 +161,12 @@ $(document).ready(function (events) {
     	run_id_a = $(".runs button.a").val();
 		run_id_b = $(".runs button.b").val();
 		id_collection = $("#collection_sett").val();
+		
     	if ( $(".runs button.a").val() > -1 && $('.runs button.b').val() > -1){
     		getTrec_eval(run_id_a, run_id_b, id_collection);
     		$('.chart').show();
     	}
+
     });
     
     trec_eval_param.change(function(){
@@ -271,16 +278,19 @@ function RunRel(id_collection, run_id_a, run_id_b){
 		{
 			rel = JSON.parse(data);
 
-			var plot_data = [];
+
 			$.each(rel, function(index, value){
 				var id = parseInt(index);
 				var a = parseInt(value[run_id_a]);
 				var b = parseInt(value[run_id_b]);
 				var c = parseInt(value.common);
-				plot_data[plot_data.length] = [id, -a, 0, 0, b];
+//				relevance[relevance.length] = ['"'+id+'"', a, b];
+				relevance[relevance.length] = ['"'+id+'"', a, b, c/10];
 			});
 			
-			drawBarChart(plot_data);
+			var order = $('input:radio[name="order"]:checked').val();
+			run_name = [run_id_a, run_id_b];
+			lChart(run_name, 'relevance', relevance, order);
 		}
 	});
 }
@@ -337,7 +347,7 @@ function getTrec_eval(run_id_a, run_id_b, id_collection){
 	) 
 	.done(function(data, status){
 		trec_eval = JSON.parse(data);
-		
+//		console.log(trec_eval);
 		//================================================================
 		
 		$("#trec_eval_param").empty();
@@ -358,6 +368,41 @@ function getTrec_eval(run_id_a, run_id_b, id_collection){
 		var order = $('input:radio[name="order"]:checked').val();
 		
 		drawLineChart(trec_eval, param, order);
+		
+		var NL = "";
+		var map_a = trec_eval[run_id_a]['value']['all']['Mean_Average_Precision']['value'];
+		var map_b = trec_eval[run_id_b]['value']['all']['Mean_Average_Precision']['value'];
+		
+		var recall_a = trec_eval[run_id_a]['value']['all']['num_rel_ret']['value']/trec_eval[run_id_a]['value']['all']['num_rel']['value'];
+		var recall_b = trec_eval[run_id_b]['value']['all']['num_rel_ret']['value']/trec_eval[run_id_b]['value']['all']['num_rel']['value'];
+		
+		var rr_a = trec_eval[run_id_a]['value']['all']['recip_rank']['value'];
+		var rr_b = trec_eval[run_id_b]['value']['all']['recip_rank']['value'];
+		
+		
+		$("#nl_abs_a").text($(".runs a#"+run_id_a).attr('title'));
+		$("#nl_abs_b").text($(".runs a#"+run_id_b).attr('title'));
+		
+		if(map_a > map_b){
+			NL += "Comparatively, Method "+trec_eval[run_id_a]['run_name']+" has a higher quality of returned results than Method "+trec_eval[run_id_b]['run_name']+". "
+		}else{
+			NL += "Comparatively, Method "+trec_eval[run_id_a]['run_name']+" has a lower quality of returned results than method "+trec_eval[run_id_b]['run_name']+".  "
+		}
+		
+		if(recall_a > recall_b){
+			NL += "Furthermore, Method "+trec_eval[run_id_a]['run_name']+" returns more relevant documents. "
+		}else{
+			NL += "Furthermore, Method "+trec_eval[run_id_a]['run_name']+" returns less relevant documents. "
+		}
+		
+		if(rr_a > rr_b){
+			NL += "Finally, Method "+trec_eval[run_id_a]['run_name']+"’s highest ranking results is of a higher quality. "
+		}else{
+			NL += "Finally, Method "+trec_eval[run_id_a]['run_name']+"’s highest ranking result is of a lower quality. "
+		}
+		
+		$("#nl_text").text(NL);
+		$(".naturalLG").show();
 		
 	});
 }
@@ -494,20 +539,62 @@ function drawLineChart(data_eval, param, order){
 	}
 }
 
-function drawBarChart(rel_data){
-//	var arr = []; 
-//		arr[0] = ['ID', 'common', 'A', 'B'];
-		
-//		arr = $.merge(arr, rel_data);
+function lChart(run_name, param, data_tail, order){
 	
-	var data = google.visualization.arrayToDataTable(rel_data, true);
-
+	data_tail.sort(function(a, b){return b[order]-a[order];});
+	
+	var data = new google.visualization.DataTable();
+	data.addColumn('string', 'ID');
+	data.addColumn('number', run_name[0]);
+	data.addColumn('number', run_name[1]);
+	data.addColumn('number', 'overlap');
+	
+	data.addRows(data_tail);
+	
 	var options = {
-		      legend:'none'
-		    };
-    
-    var chart = new google.visualization.CandlestickChart(document.getElementById("plot"));
-    chart.draw(data, options);
+			title: param,
+			curveType: 'none',
+			legend: { position: 'bottom' },
+			height: 500,
+			explorer: {maxZoomIn: .01} ,
+			lineWidth: 1
+		};
+
+	var chart = new google.visualization.LineChart(document.getElementById("plot"));
+	chart.draw(data, options);
+
+//=============================================================================
+	
+	google.visualization.events.addListener(chart, 'select', selectHandler);
+	
+	function selectHandler() {
+
+		$(".run_data .a").empty();
+		$(".run_data .b").empty();
+		
+		var selectedItem = chart.getSelection()[0];
+		
+		if (selectedItem) {
+			var id_query;
+			if (order == 4){
+				var cal = selectedItem.column;
+				var row = data.getValue(selectedItem.row, 0);
+				id_query = v[cal][row].query_id;
+				
+			}else{
+				id_query = data.getValue(selectedItem.row, 0);
+			}
+
+			var ids = ["a", "b"];
+			var i = 0;
+
+			$.each(trec_eval, function(id_run, value){
+				getRunVal(id_collection, id_run, id_query, ids[i]);
+				i++;
+			});
+			$(".run_data").show();
+		}
+	}
 }
 
 function getAVRparam(run_id, param){
@@ -556,6 +643,58 @@ function setNLG_(id){
 	return result;
 }
 
-function drawRunsRelevance(){
+function overview(collection_id){
+	
+	$.get("getData.php", {data : "overview", id_user : "1", id_collection : collection_id}, 
+			function(data, status){
+	
+				var collection = JSON.parse(data);
+
+				if (typeof collection['error'] == "Undefined" || !collection['error']) {
+					$("#overview").empty();
+					$("#overview").append('<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>');
+					var i = 0;
+					$.each(collection, function( run_id, value ) {
+						var run_name = value.run_name;
+						var text = run_name + " " + setNLG_(run_id) + "</br></br>";
+						
+						$.each(value.run_values, function( param, val ) {
+							text += param + " = " + val + "</br>";
+						});
+						if (i>0){
+							collapsed = "collapsed";
+							aria_expanded="false";
+							in_ = "";
+						}else{
+							collapsed = "";
+							aria_expanded="true";
+							in_ = " in";
+						}
+						
+						$("#accordion").prepend(
+							'<div class="panel panel-default">'+
+								'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
+									'<h4 class="panel-title">'+
+										'<a class="'+collapsed+'" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="'+aria_expanded+'" aria-controls="collapse'+run_id+'">'+
+											run_name+
+										'</a>'+
+									'</h4>'+
+								'</div>'+
+								'<div id="collapse'+run_id+'" class="panel-collapse collapse '+ in_+'" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
+									'<div class="panel-body">'+
+										text+
+									'</div>'+
+								'</div>'+
+							'</div>'
+						);
+						i++; 
+					});
+					
+				}else{
+					console.log("Error============="+data);
+				}
+			}
+		);
+	
 	
 }

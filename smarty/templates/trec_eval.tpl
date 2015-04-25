@@ -37,12 +37,13 @@
 	</div>
 	
 	<div class="row coll_sett naturalLG">
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data naturalLG' id="a">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class='trec_eval_data naturalLG'>
+			<h3 id="nl_head">Natural language results</h3>
+			<span id="nl_abs_a"></span></br></br>
+			<span id="nl_abs_b"></span></br></br>
+			<span id="nl_text"></span>
 			</div>
-		</div>
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data naturalLG' id="b"></div>
 		</div>
 	</div>
 	

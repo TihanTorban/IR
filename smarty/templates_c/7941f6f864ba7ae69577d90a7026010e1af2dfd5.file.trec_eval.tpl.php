@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-07 22:47:35
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-25 13:03:48
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:83164565354ef9f9c23f866-60064323%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '7941f6f864ba7ae69577d90a7026010e1af2dfd5' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl',
-      1 => 1428439567,
+      1 => 1429959116,
       2 => 'file',
     ),
   ),
@@ -58,12 +58,13 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	</div>
 	
 	<div class="row coll_sett naturalLG">
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data naturalLG' id="a">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class='trec_eval_data naturalLG'>
+			<h3 id="nl_head">Natural language results</h3>
+			<span id="nl_abs_a"></span></br></br>
+			<span id="nl_abs_b"></span></br></br>
+			<span id="nl_text"></span>
 			</div>
-		</div>
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='trec_eval_data naturalLG' id="b"></div>
 		</div>
 	</div>
 	

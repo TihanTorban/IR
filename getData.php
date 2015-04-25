@@ -37,7 +37,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							$result["run_names"] = $runs->getRunsByIdCollection($_GET["id_collection"]);
 						}
 					}else{
-						error_msg("Not inaf data".PHP_EOL);
+						error_msg("Not enough data".PHP_EOL);
 					}
 
 				} catch (Exception $e) {
@@ -57,7 +57,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							
 							$result = $run->getRunValueByIdQuery($id_run, $id_query);
 						}else{
-							error_msg("Not inaf data".PHP_EOL);
+							error_msg("Not enough data".PHP_EOL);
 						}
 					}
 				
@@ -102,7 +102,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							}
 						}
 					}else{
-						error_msg("Not inaf data".PHP_EOL);
+						error_msg("Not enough data".PHP_EOL);
 					}
 				} catch (Exception $e) {
 					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
@@ -120,7 +120,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 						$result[$_GET["run_id_b"]] = $trec_eval_b->getTrecEval();
 						
 					}else{
-						error_msg("Not inaf data".PHP_EOL);
+						error_msg("Not enough data".PHP_EOL);
 					}
 				} catch (Exception $e) {
 					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
@@ -141,10 +141,52 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 							$result['id'] = $trec_eval->getTrecValue($_GET["param"], $_GET["id_run"]);
 						}
 					}else{
-						error_msg("Not inaf data".PHP_EOL);
+						error_msg("Not enough data".PHP_EOL);
 					}
 				} catch (Exception $e) {
 					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+				}
+					
+				break;
+				
+			case "overview":
+				try {
+					if ( !empty($id_collection) ){
+						$query = "SELECT t.id_run AS id_run, t.name AS param, t.value AS value, r.name AS run_name
+									FROM trec_eval AS t 
+									INNER JOIN runs AS r 
+										ON t.id_run = r.id_run 
+									INNER JOIN queries AS q 
+										ON t.id_query = q.id 
+									WHERE r.id_collection = $id_collection
+									and q.id_query='all'";
+						
+						if($rslt = $mysql->query($query)){
+						
+							if ($rslt->num_rows > 0) {
+						
+								while ($row = $rslt->fetch_assoc()) {
+									$id_run = $row['id_run'];
+									$param =  $row['param'];
+									$value =  $row['value'];
+									$run_name =  $row['run_name'];
+										
+									$result[$id_run]['run_name'] = $run_name;
+									$result[$id_run]['run_values'][$param] = $value;
+								}
+						
+							} else {
+								error_msg("Not enough data".PHP_EOL);
+							}
+						
+						}else{
+							error_msg("Can not take data from DB");
+						}
+					}else{
+						error_msg("Not enough data".PHP_EOL);
+					}
+				} catch (Exception $e) {
+					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
 				}
 					
 				break;

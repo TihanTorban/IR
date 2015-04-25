@@ -10,6 +10,9 @@
 		<a href="#evaluation" data-toggle="tab">Evaluation</a>
 	</li>
 	<li>
+		<a href="#overview" data-toggle="tab">Overview</a>
+	</li>
+	<li>
 		<a href="#info" data-toggle="tab">INFO</a>
 	</li>
 </ul>

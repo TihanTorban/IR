@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-06 10:32:45
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-24 17:01:11
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/index.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:552501654ef9f9c032c50-68296638%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'aedc9de2499a8495a76343c790dc0a7cf9a0afc4' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/index.tpl',
-      1 => 1428309161,
+      1 => 1429887667,
       2 => 'file',
     ),
   ),
@@ -64,6 +64,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
             <?php echo $_smarty_tpl->getSubTemplate ("trec_eval.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
             <?php echo $_smarty_tpl->getSubTemplate ("info.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
+
+            <?php echo $_smarty_tpl->getSubTemplate ("overview.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, null, array(), 0);?>
 
         </div>
         
