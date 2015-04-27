@@ -34,7 +34,7 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 					if ( !empty($id_collection) ){
 						$runs = new Runs($mysql, $id_collection, $id_user);
 						if (isset($runs)){
-							$result["run_names"] = $runs->getRunsByIdCollection($_GET["id_collection"]);
+							$result = $runs->getRunsByIdCollection($_GET["id_collection"]);
 						}
 					}else{
 						error_msg("Not enough data".PHP_EOL);

@@ -128,7 +128,7 @@ class Runs{
 					$this->name[] = $row['name'];
 					$this->privacy[] = $row['privacy'];
 					
-					$runs[$row['id_run']]['name'] = $row['name'];
+					$runs[$row['id_run']]['run_name'] = $row['name'];
 					$runs[$row['id_run']]['privacy'] = $row['privacy'];
 						
 				}

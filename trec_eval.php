@@ -140,8 +140,7 @@ class Trec_eval{
 					$param =  $row['param'];
 					$value =  $row['value'];
 					$run_name =  $row['run_name'];
-					
-					$trec_eval['id_run'] = $id_run;
+
 					$trec_eval['run_name'] = $run_name;
 					
 					if ( $q_name != "all" ){
