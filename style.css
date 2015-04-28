@@ -60,10 +60,18 @@
 }
 
 .highlightPair{
+	border: 2px solid #ff2;
+}
+
+.highlightPairClick{
 	background-color: #ff2;
 }
 
 .highlightSingle{
+	border: 2px solid #2ff;
+}
+
+.highlightSingleClick{
 	background-color: #2ff;
 }
 

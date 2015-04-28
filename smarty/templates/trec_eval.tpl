@@ -30,7 +30,7 @@
 			<input type="radio" name="order" value='4'/><span>all</span>
 		</div>
 	</div>
-	<div class="row chart coll_sett" id="chart">
+	<div class="row chart coll_sett chart">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 			<div id="plot"></div>
 		</div>

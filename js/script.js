@@ -20,7 +20,7 @@ $collection.on( "changeCollection", function () {
 	$(this).prop("compare", { a: -1, b: -1 });
 	
 	$(".chart").hide();
-	$(".plot").empty();
+	$("#plot").empty();
 	
 	$(".runs button.a>span.text").text("A: ");
 	$(".runs button.a").val(-1);
@@ -184,17 +184,28 @@ $(document).ready(function (events) {
 	});
     
 	//highlight comparing two runs result
-    $(document).on('click', '.compareQrels', function () {
-    	$( 'span' ).removeClass( 'highlightSingle highlightPair' );
-    	id = $(this).attr('id');
-    	
-    	if ( $("."+id).length == 2 ){
-    		$("."+id).addClass('highlightPair');
-    	}else{
-    		$("."+id).addClass('highlightSingle');
-    	};
-    	
-    });
+    $(document).on({
+    		click: function() {
+    			$( 'span' ).removeClass( "highlightSingleClick highlightPairClick" );
+    			id = $(this).attr('id');
+    			
+    	    	if ( $("."+id).length == 2 ){
+    	    		$("."+id).addClass('highlightPairClick');
+    	    	}else{
+    	    		$("."+id).addClass('highlightSingleClick');
+    	    	};
+    		}, mouseenter: function() {
+    			id = $(this).attr('id');
+    			
+    			if ( $("."+id).length == 2 ){
+    	    		$("."+id).addClass('highlightPair');
+    	    	}else{
+    	    		$("."+id).addClass('highlightSingle');
+    	    	};
+    		}, mouseleave: function() {
+    			$( 'span' ).removeClass( "highlightSingle highlightPair" );
+    		}
+		}, '.compareQrels');
     
 // PLOT =======================================================================
     
@@ -689,7 +700,7 @@ function drawLineChart(data, param, order, nCall){
 			
 			break;
 		default:
-		
+
 			$("span#run_name_a").text(data.a.run_name);
 			$("span#run_name_b").text(data.b.run_name);
 			$("span#run_name_d").text("Diff(" + data.a.run_name + " - " + data.b.run_name + ")");
@@ -739,16 +750,23 @@ function drawLineChart(data, param, order, nCall){
 //========================================================================================	
 	plotData.addRows(data_tail);
 	
+	var documentWidth = $(document).width(); //retrieve current document width
+	var documentHeight = $(document).height(); //retrieve current document height
+	console.log(documentWidth);
 	var options = {
 			title: param,
 			curveType: 'none',
 			legend: { position: 'bottom' },
-			height: 500,
+			height: documentHeight/1.5,
+			width: documentWidth,
 			explorer: {maxZoomIn: .01} ,
-			lineWidth: 1
+			lineWidth: 1,
+			chartArea: {left:50,top:40,width:'90%'},
+
 		};
 
 	var chart = new google.visualization.LineChart(document.getElementById("plot"));
+	
 	chart.draw(plotData, options);
 
 //=============================================================================

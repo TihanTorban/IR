@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.19, created on 2015-04-25 13:03:48
+<?php /* Smarty version Smarty-3.1.19, created on 2015-04-27 23:38:51
          compiled from "/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:83164565354ef9f9c23f866-60064323%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '7941f6f864ba7ae69577d90a7026010e1af2dfd5' => 
     array (
       0 => '/home/gluck/workspace/Bachelor/smarty/templates/trec_eval.tpl',
-      1 => 1429959116,
+      1 => 1430170709,
       2 => 'file',
     ),
   ),
@@ -51,7 +51,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 			<input type="radio" name="order" value='4'/><span>all</span>
 		</div>
 	</div>
-	<div class="row chart coll_sett" id="chart">
+	<div class="row chart coll_sett chart">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 			<div id="plot"></div>
 		</div>
