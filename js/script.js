@@ -640,12 +640,10 @@ function overview(collection_id){
 	$.each($collection.prop('runs'), function( run_id, value ) {
 		var run_name = value.run_name;
 		var text = run_name + " " + setNLG_(run_id) + "</br></br>";
-		console.log(value);
+
 		$.each(value.value.all, function( param, val ) {
 			text += param + " = " + val.value + "</br>";
 		});
-		
-		
 		
 		if (i>0){
 			collapsed = "collapsed";
@@ -675,7 +673,14 @@ function overview(collection_id){
 		);
 		i++; 
 	});
-	drawBarChart("overviewChart", "relevance", "c");
+	$("#overviewChart").append('<div id="overviewChart1"></div>');
+	drawBarChart("overviewChart1", "all-relevance", "c");
+	
+	$("#overviewChart").append('<div id="overviewChart2"></div>');
+	drawPieChart("overviewChart2", "all-relevance", "c");
+	
+	$("#overviewChart").append('<div id="overviewChart3"></div>');
+	drawBarChart("overviewChart3", "all", "c");
 }
 
 function drawLineChart(data, param, order, nCall){
@@ -854,7 +859,7 @@ function drawPieChart(target, param, title){
 	var plotData = new google.visualization.DataTable();
 	plotData.addColumn('string', 'ID');
 	plotData.addColumn('number', 'Amount');
-	
+	plot_data = [];
 	switch (param) {
 		case "relevance":
 			var run_name_a = $collection.prop('runs')[$collection.prop('compare').a].run_name;
@@ -871,6 +876,11 @@ function drawPieChart(target, param, title){
 			});
 			
 			plot_data = [[run_name_a, a], [run_name_b, b], ['Overlap', c]];
+			break;
+		case "all-relevance":
+			$.each($collection.prop('runs'), function(index, val){
+				plot_data.push([val.run_name, val.value.all.relevance.value]);
+			});
 			break;
 	}
 	
@@ -897,14 +907,13 @@ function drawBarChart(target, param, title){
 	var runs_names = [];
 	
 	switch (param) {
-		case "relevance":
-			
+		case "all-relevance":
 			
 			var runs_ids = [];
 			var runs_value = [];
 			$.each($collection.prop('runs'), function(key, value){
 				runs_names.push(value.run_name);
-				runs_ids.push(key);
+				runs_ids.push(key);				
 			});
 			
 			$.each(runs_names, function(key, value){
@@ -921,26 +930,71 @@ function drawBarChart(target, param, title){
 				run_val.push( '' );
 				runs_value.push(run_val);
 			});
+			
+			runs_names.unshift("RUN name");
+			runs_names.push( { role: 'annotation' });
+			
+			runs_value.unshift(runs_names);
+			
+			plotData = runs_value;
+			
+			break;
+		case "all":
+			
+			var header = [];
+			var tail = [];
+			
+			var runs = $collection.prop('runs');
+			var run_params = runs[Object.keys(runs)[0]].value.all;
+			
+			console.log(run_params);
+			
+			$.each(runs, function(key, value){
+				header.push(value.run_name);			
+			});
+			
+			$.each(run_params, function(param, value){
+				if (param != 'runid'){
+					var elem = [];
+					elem.push(param);
+					
+					$.each(runs, function(run_id, val){
+						elem.push( parseInt(val.value.all[param].value) );
+					});
+					
+					elem.push('');
+					
+					tail.push(elem);
+				}
+			});
+			header.push({ role: 'annotation' });
+			
+			header.unshift("RUN name");
+			
+			tail.unshift(header);
+			
+			plotData = tail;
+			
+			console.log(header);
+			console.log(tail);
+			
 			break;
 	}
 	
-	runs_names.unshift("RUN name");
-	runs_names.push( { role: 'annotation' });
 	
-	runs_value.unshift(runs_names);
 	
-
-	var plotData = google.visualization.arrayToDataTable(runs_value);
+	var plotData = google.visualization.arrayToDataTable(plotData);
 	
 	var options = {
+			title : title,
 	        width: 600,
 	        height: 400,
-	        legend: { position: 'top', maxLines: 3 },
+	        legend: { position: 'right', maxLines: 3 },
 	        bar: { groupWidth: '75%' },
 	        isStacked: true
 	      };
 	
-	var chart = new google.visualization.BarChart(document.getElementById("overviewChart"));
+	var chart = new google.visualization.ColumnChart(document.getElementById(target));
     chart.draw(plotData, options);
 	        
 };
