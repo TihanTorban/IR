@@ -68,7 +68,7 @@ class Runs{
 
 	}
 	
-	public function getRunValueById( $id_run ){
+	public function getRunRelValueById( $id_run ){
 		
 		$id_collection = $this->db->real_escape_string($this->id_collection);
 		
@@ -91,15 +91,21 @@ class Runs{
 		}else{
 			throw new Exception("Can not take data from DB");
 		}
-		
+		$total_count = 0;
 		if($result_r = $this->db->query($query_r)){
 			if ($result_r->num_rows > 0) {
 				while ($row_r = $result_r->fetch_assoc()) {
 					
-					if ( isset( $qrels[ $row_r["id_query"] ][ $row_r["doc_id"] ]) ){
-						$run_relevant[ $row_r["id_query"] ][$row_r["doc_id"]] = $qrels[ $row_r["id_query"] ][ $row_r["doc_id"] ] ;
+					if ( isset( $qrels[ $row_r['id_query'] ][ $row_r['doc_id'] ]) ){
+						if( !isset($run_relevant['value']['relevance'][ $row_r['id_query'] ]) ){
+							$run_relevant['value']['relevance'][ $row_r["id_query"] ]['value'] = 0;
+						}
+						$total_count++;
+						$run_relevant['value']['relevance'][ $row_r['id_query'] ]['value']++;
+						$run_relevant['value']['relevance'][ $row_r['id_query'] ]['docs'][$row_r['doc_id']] = $qrels[ $row_r['id_query'] ][ $row_r['doc_id'] ] ;
 					}
 				}
+				$run_relevant['value']['all']['relevance']['value'] = $total_count;
 			} else {
 				return false;
 			}

@@ -1,6 +1,10 @@
 var id_user = 1;
 var relevance = [];
 
+var natural_a = "is weak in finding relevant results, and the quality of the retrieved results is low. Therefore, this method is generally not recommended, unless specific reasons warrant its use.";
+var natural_b = "is effective in retrieving relevant results, but generally the quality of the retrieved documents is low. Therefore, this method is acceptable for queries where it is desirable to find as many relevant documents as possible.";
+var natural_c = "is weak in finding relevant results in the pool of data, but the returned results are generally of high quality. Therefore, this method is acceptable for queries where the quality of the retrieved documents is more important than the number of relevant documents retrieved.";
+var natural_d = "is effective in finding relevant results, and the quality of the retrieved results is good. Therefore, this method is generally recommended for all type of searches.";
 
 
 // Define a plain object
@@ -9,14 +13,15 @@ var collection_o = { id: "-1", name: "NaN" };
 // Pass it to the jQuery function
 var $collection = $( collection_o );
 
+console.log($collection);
+
 $collection.on( "changeCollection", function () {
 	
-	var id = $("#collection_sett").val();
-	var name = $("#collection_sett option:selected").text();
+	var collection_id = $("#collection_sett").val();
+	var collection_name = $("#collection_sett option:selected").text();
 	
-	$(this).prop( "id", id );
-	$(this).prop( "name", name );
-	
+	$(this).prop( "id", collection_id );
+	$(this).prop( "name", collection_name );
 	$(this).prop("compare", { a: -1, b: -1 });
 	
 	$(".chart").hide();
@@ -28,10 +33,15 @@ $collection.on( "changeCollection", function () {
 	$(".runs button.b>span.text").text("B: ");
 	$(".runs button.b").val(-1);
 	
-	if ($(this).prop("id") !=-1){
-		getRuns($(this).prop("id"), id_user);
+	if ( $(this).prop("id") != -1 ){
+		getRunsNames($(this).prop("id"), id_user);
+		
+		getRunsValues($(this).prop("id"));
+		
 		$(".runs_a_b").show();
+		
 		overview($(this).prop("id"));
+		
 	}else{
 		$(".coll_sett").hide();
 		$("#overview").empty();
@@ -42,34 +52,33 @@ $collection.on( "compareToRuns", function () {
 	
 	var run_id_a = $(".runs button.a").val();
 	var run_id_b = $(".runs button.b").val();
-	var id_collection = $("#collection_sett").val();
 	
 	if ( run_id_a > -1 && run_id_b > -1){
+		
 		$(this).prop("compare", { a: run_id_a, b: run_id_b });
 		
-		getTrec_eval(run_id_a, run_id_b, id_collection);
-			
+		$.each($(this).prop("compare"), function(id, value){
+			if ( typeof $collection.prop('runs')[id] !== "undefined" && variable) {
+				getRunValue(id, false);
+			}
+		});
+		
 		setParam();
 	
 		setNL();
 		
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
-		var trec_eval = { a: $collection.prop("runs")[run_id_a], b: $collection.prop("runs")[run_id_b] };
+		var plot_data = { a: $collection.prop("runs")[run_id_a], b: $collection.prop("runs")[run_id_b] };
 		
-		drawLineChart(trec_eval, param, order, 3);
+		$(".order").children().prop('disabled',false);
+		$(".chart_type").children().prop('disabled',true);
+		drawLineChart(plot_data, param, order, 3);
 		
 		$('.chart').show();
 		
 	}
 });
-
-
-var natural_a = "is weak in finding relevant results, and the quality of the retrieved results is low. Therefore, this method is generally not recommended, unless specific reasons warrant its use.";
-var natural_b = "is effective in retrieving relevant results, but generally the quality of the retrieved documents is low. Therefore, this method is acceptable for queries where it is desirable to find as many relevant documents as possible.";
-var natural_c = "is weak in finding relevant results in the pool of data, but the returned results are generally of high quality. Therefore, this method is acceptable for queries where the quality of the retrieved documents is more important than the number of relevant documents retrieved.";
-var natural_d = "is effective in finding relevant results, and the quality of the retrieved results is good. Therefore, this method is generally recommended for all type of searches.";
-
 
 $(document).ready(function (events) {
 	
@@ -223,13 +232,32 @@ $(document).ready(function (events) {
 
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
+		var chartType = $('input:radio[name="chart_type"]:checked').val();
 		
-		if (param == "runs_relevance"){
-			RunRel($collection.prop("id"), $collection.prop("compare").a, $collection.prop("compare").b);
+		var plot_data = [];
+		
+		if (param == "relevance"){
+			getCompareRunsRel();
+			
+			$(".chart_type").children().prop('disabled',false);
+			
+			switch (chartType) {
+			
+				case "line":
+					$(".order").children().prop('disabled',false);
+					drawLineChart(plot_data, param, order, 3);
+					break;
+					
+				case "pie":
+					$(".order").children().prop('disabled',true);
+					drawPieChart('plot', param, "Relevance values");
+					break;
+			}
+			
 		}else{
-				
+			$(".order").children().prop('disabled',false);
+			$(".chart_type").children().prop('disabled',true);
 			drawLineChart(trec_eval, param, order, 3);
-
 		}
 		
 	});
@@ -244,6 +272,24 @@ $(document).ready(function (events) {
 		var order = $('input:radio[name="order"]:checked').val();
 		
 		drawLineChart(trec_eval, param, order, 3);
+	});
+	
+	$('input:radio[name="chart_type"]').change(function(){
+		var param = $("#trec_eval_param").val();
+		var order = $('input:radio[name="order"]:checked').val();
+		
+		switch ( $(this).val() ) {
+		
+			case "line":
+				$(".order").children().prop('disabled',false);
+				drawLineChart(plot_data, param, order, 3);
+				break;
+				
+			case "pie":
+				$(".order").children().prop('disabled',true);
+				drawPieChart('plot', param, "Relevance values");
+				break;
+		}
 	});
 
     
@@ -274,14 +320,17 @@ function getCollections(){
 }
 
 //==GET RUNs names by collection_id FROM DB=============================================================
-function getRuns(id_collection, id_user){
-	
-	$.get("getData.php", 
-		{ data: "runs_names", 
-			id_user: id_user , 
-			id_collection: id_collection}, 
-		function(data, status){
-	
+function getRunsNames(id_collection, id_user){
+	$.ajax({
+		url: 'getData.php?data=runs_names&id_user='+id_user+'&id_collection='+id_collection,			// Url to which the request is send
+		type: "GET",				// Type of request to be send, called as method
+		enctype: 'multipart/form-data',
+		async: false,
+		contentType: false,			// The content type used when sending data to the server.
+		cache: false,				// To unable request pages to be cached
+		processData:false,			// To send DOMDocument or non processed data file it is set to false
+		success: function(data)		// A function to be called if request succeeds
+		{
 			var runs = JSON.parse(data);
 			
 			if ( !(typeof data['error'] !== "undefined" && data['error'])) {
@@ -322,39 +371,90 @@ function getRuns(id_collection, id_user){
 				});
 			}
 		}
-	);
+	});
 }
 
-//get relevance from RUNs
-function RunRel(id_collection, run_id_a, run_id_b){
-	var get_data = 'data=compareTwoRunRel&id_user='+id_user+'&run_id_a='+run_id_a+'&run_id_b='+run_id_b+'&id_collection='+id_collection; 
+//get relevances RUNs docs
+function getRunRel(id_collection, run_id, sync){
+	var get_data = 'data=getRunRel&id_user='+id_user+'&id_run='+run_id+'&id_collection='+id_collection; 
 	$.ajax({
 		url: 'getData.php?'+get_data,			// Url to which the request is send
 		type: "GET",				// Type of request to be send, called as method
 		enctype: 'multipart/form-data',
-		async: false,
+		async: sync,
 		contentType: false,			// The content type used when sending data to the server.
 		cache: false,				// To unable request pages to be cached
 		processData:false,			// To send DOMDocument or non processed data file it is set to false
 		success: function(data)		// A function to be called if request succeeds
 		{
 			rel = JSON.parse(data);
-
-
-			$.each(rel, function(index, value){
-				
-				var a = parseInt(value[run_id_a]);
-				var b = parseInt(value[run_id_b]);
-				var c = parseInt(value.common);
-				
-				relevance[relevance.length] = [index, a, b, c/10];
-			});
-			
-			var order = $('input:radio[name="order"]:checked').val();
-			run_name = [run_id_a, run_id_b];
-			lChart(run_name, 'relevance', relevance, order);
+			$.extend( true, $collection.prop("runs"), rel );
 		}
 	});
+}
+
+//get relevance from RUNs A and B anr return common and exclusive relevance's
+function getCompareRunsRel(){
+	var collection_id = $collection.prop('id');
+	var run_id_a = $collection.prop('compare').a;
+	var run_id_b = $collection.prop('compare').b;
+	
+	if (run_id_a != -1 && run_id_b != -1){
+		if (typeof $collection.prop('runs')[run_id_a].value.relevance == "Undefined" || 
+					!$collection.prop('runs')[run_id_a].value.relevance) {
+			getRunRel(id_collection, run_id_a, false);
+		}
+		if (typeof $collection.prop('runs')[run_id_b].value.relevance == "Undefined" || 
+				!$collection.prop('runs')[run_id_b].value.relevance) {
+			getRunRel(collection_id, run_id_b, false);
+		}
+		
+		var a = $collection.prop('runs')[run_id_a].value.relevance;
+		var b = $collection.prop('runs')[run_id_b].value.relevance;
+
+		var result = {};
+		
+		$.each(a, function( id_query, value ) {
+			result[id_query] = {common : 0, a : 0, b : 0};
+
+			$.each(value.docs, function( doc, rel ) {
+				if (typeof b[id_query] != "undefined" && b[id_query] !== null ){
+					if ( typeof b[id_query].docs != "undefined" && b[id_query].docs !== null ){
+						if ( typeof b[id_query].docs[doc] != "undefined" && b[id_query].docs[doc] !== null ){
+							result[id_query].common++;
+						}else{
+							result[id_query].a++;
+						}	
+					}else{
+						result[id_query].a++;
+					}
+				}else{
+					result[id_query].a++;
+				}
+			});
+		});
+		
+		$.each(b, function( id_query, value ) {
+			if ( typeof result[id_query] == "undefined" || result[id_query] == null ){
+				result[id_query] = {common : 0, a : 0, b : 0};
+			}
+
+			$.each(value.docs, function( doc, rel ) {
+				if ( typeof a[id_query] != "undefined" && a[id_query] !== null ){
+					if ( typeof a[id_query].docs[doc] == "undefined" || a[id_query].docs[doc] == null ) {
+						result[id_query].b++;
+					}
+				}else{
+					result[id_query].b++;
+				}
+			});
+		});
+
+	}
+	
+	$collection.prop('compare').relevance = result;
+	
+	return result;
 }
 
 function getRunVal(id_collection, id_run, id_query, place, param){
@@ -370,12 +470,12 @@ function getRunVal(id_collection, id_run, id_query, place, param){
 		) 
 		.done(function(data, status){
 
-			runValues = JSON.parse(data);
+			var runValues = JSON.parse(data);
 			
-			console.log(runValues);
+//			console.log(data);
 			
 			var run_name = $collection.prop("runs")[id_run].run_name;
-			var query_name = $collection.prop("runs")[id_run].value[param][id_query].q_name;
+			var query_name = $collection.prop("runs")[id_run].value[param][id_query].name;
 			$(".run_data ."+place).append("<b>RUN: </b>" + run_name + "; ");
 			$(".run_data ."+place).append("<b>Query id: </b>"+query_name);
 			
@@ -384,7 +484,7 @@ function getRunVal(id_collection, id_run, id_query, place, param){
 				doc_name = decodeURI($(doc_arr).get(-1));
 				
 				docClass = doc_name.replace(/[\*\^\'\!\(\)\[\]\{\}\,\.\:\%\@\!\#\$\&\`\ \"]/g, '');
-
+ 
 				if  ( typeof (doc_id[doc_name]) === "undefined" ){
 					doc_id[doc_name] = index;
 				};
@@ -418,6 +518,7 @@ function getTrec_eval(run_id_a, run_id_b, id_collection){
 		success: function(data)		// A function to be called if request succeeds
 		{
 			var trec_eval = JSON.parse(data);
+//			console.log(trec_eval);
 			
 			$.extend( true, $collection.prop("runs"), trec_eval );
 		}
@@ -437,7 +538,7 @@ function setParam(){
 		}
 	});
 	
-	$("#trec_eval_param").append("<option value='runs_relevance' >runs relevance</option>");
+//	$("#trec_eval_param").append("<option value='runs_relevance' >runs relevance</option>");
 }
 
 function setNL(){
@@ -481,68 +582,6 @@ function setNL(){
 	$(".naturalLG").show();
 }
 
-function lChart(run_name, param, data_tail, order){
-	
-	data_tail.sort(function(a, b){return b[order]-a[order];});
-	
-	var data = new google.visualization.DataTable();
-	data.addColumn('string', 'ID');
-	data.addColumn('number', run_name[0]);
-	data.addColumn('number', run_name[1]);
-	data.addColumn('number', 'overlap');
-	
-	data.addRows(data_tail);
-	
-	var options = {
-			title: param,
-			curveType: 'none',
-			legend: { position: 'bottom' },
-			height: 500,
-			explorer: {maxZoomIn: .01} ,
-			lineWidth: 1
-		};
-
-	var chart = new google.visualization.LineChart(document.getElementById("plot"));
-	chart.draw(data, options);
-
-//=============================================================================
-	
-	google.visualization.events.addListener(chart, 'select', selectHandler);
-	
-	function selectHandler() {
-
-		$(".run_data .a").empty();
-		$(".run_data .b").empty();
-		
-		var selectedItem = chart.getSelection()[0];
-		
-		if (selectedItem) {
-			var id_query;
-			if (order == 4){
-				var cal = selectedItem.column;
-				var row = data.getValue(selectedItem.row, 0);
-				id_query = v[cal][row].query_id;
-				
-			}else{
-				id_query = data.getValue(selectedItem.row, 0);
-			}
-
-			var ids = ["a", "b"];
-			var i = 0;
-			var a = $collection.prop("compare").a;
-	    	var b = $collection.prop("compare").b;
-	    	
-	    	var trec_eval = [$collection.prop("runs")[a], $collection.prop("runs")[b]];
-	    	
-			$.each(trec_eval, function(id_run, value){
-				getRunVal($collection.prop("id"), id_run, id_query, ids[i]);
-				i++;
-			});
-			$(".run_data").show();
-		}
-	}
-}
-
 function getAVRparam(run_id, param){
 	var id_collection = $("#collection_sett").val();
 	var avr;
@@ -558,6 +597,8 @@ function getAVRparam(run_id, param){
 		success: function(data)		// A function to be called if request succeeds
 		{
 			avr = JSON.parse(data);
+			
+//			console.log(avr);
 		}
 	});
 	
@@ -590,61 +631,55 @@ function setNLG_(id){
 }
 
 function overview(collection_id){
-	
-	$.get("getData.php", {data : "overview", id_user : "1", id_collection : collection_id}, 
-		function(data, status){
 
-			var collection = JSON.parse(data);
+	$("#overviewText").empty();
+	$("#overviewChart").empty();
+	$("#overviewText").append('<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>');
 
-			if (typeof collection['error'] == "Undefined" || !collection['error']) {
-				$("#overview").empty();
-				$("#overview").append('<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>');
-				var i = 0;
-				$.each(collection, function( run_id, value ) {
-					var run_name = value.run_name;
-					var text = run_name + " " + setNLG_(run_id) + "</br></br>";
-					
-					$.each(value.run_values, function( param, val ) {
-						text += param + " = " + val + "</br>";
-					});
-					if (i>0){
-						collapsed = "collapsed";
-						aria_expanded="false";
-						in_ = "";
-					}else{
-						collapsed = "";
-						aria_expanded="true";
-						in_ = " in";
-					}
-					
-					$("#accordion").prepend(
-						'<div class="panel panel-default">'+
-							'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
-								'<h4 class="panel-title">'+
-									'<a class="'+collapsed+'" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="'+aria_expanded+'" aria-controls="collapse'+run_id+'">'+
-										run_name+
-									'</a>'+
-								'</h4>'+
-							'</div>'+
-							'<div id="collapse'+run_id+'" class="panel-collapse collapse '+ in_+'" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
-								'<div class="panel-body">'+
-									text+
-								'</div>'+
-							'</div>'+
-						'</div>'
-					);
-					i++; 
-				});
-				
-			}else{
-				console.log("Error============="+data);
-			}
+	var i = 0;
+	$.each($collection.prop('runs'), function( run_id, value ) {
+		var run_name = value.run_name;
+		var text = run_name + " " + setNLG_(run_id) + "</br></br>";
+		console.log(value);
+		$.each(value.value.all, function( param, val ) {
+			text += param + " = " + val.value + "</br>";
+		});
+		
+		
+		
+		if (i>0){
+			collapsed = "collapsed";
+			aria_expanded="false";
+			in_ = "";
+		}else{
+			collapsed = "";
+			aria_expanded="true";
+			in_ = " in";
 		}
-	);
+		
+		$("#accordion").prepend(
+			'<div class="panel panel-default">'+
+				'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
+					'<h4 class="panel-title">'+
+						'<a class="'+collapsed+'" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="'+aria_expanded+'" aria-controls="collapse'+run_id+'">'+
+							run_name+
+						'</a>'+
+					'</h4>'+
+				'</div>'+
+				'<div id="collapse'+run_id+'" class="panel-collapse collapse '+ in_+'" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
+					'<div class="panel-body">'+
+						text+
+					'</div>'+
+				'</div>'+
+			'</div>'
+		);
+		i++; 
+	});
+	drawBarChart("overviewChart", "relevance", "c");
 }
 
 function drawLineChart(data, param, order, nCall){
-
+	
 	var data_tail = [];
 	var data_not_ordered = [];
 	var v = [];
@@ -653,17 +688,20 @@ function drawLineChart(data, param, order, nCall){
 		v[3] = [];
 	var v_a = [];
 	
+	run_name_a = $collection.prop('runs')[$collection.prop('compare').a].run_name;
+	run_name_b = $collection.prop('runs')[$collection.prop('compare').b].run_name;
+	
 	var plotData = new google.visualization.DataTable();
 	plotData.addColumn('string', 'ID');
-	plotData.addColumn('number', data.a.run_name);
-	plotData.addColumn('number', data.b.run_name);
+	plotData.addColumn('number', run_name_a);
+	plotData.addColumn('number', run_name_b);
 	
 	switch (param) {
 		case "all":
 			$("span#run_name_a").text(data.a.run_name);
 			$("span#run_name_b").text(data.b.run_name);
 			$("span#run_name_d").text("Diff(" + data.a.run_name + " - " + data.b.run_name + ")");
-			
+			$(".radio_all").show();
 			if (nCall == 3){
 				plotData.addColumn('number', 'Diff');
 			}
@@ -688,22 +726,29 @@ function drawLineChart(data, param, order, nCall){
 				i++;
 			});
 			break;
-		case "runs_relevance":
-			data_tail.sort(function(a, b){return b[order]-a[order];});
+		case "relevance":
+			$("span#run_name_a").text(run_name_a);
+			$("span#run_name_b").text(run_name_b);
+			$("span#run_name_d").text("Overlap(" + run_name_a + " & " + run_name_b + ")");
+			$(".radio_all").hide();
 			
-			if (nCall == 3){
-				plotData.addColumn('number', 'Diff');
-			}
+			var plot_data = [];
 			
-			plotData.addRows(data_tail);
+			$.each($collection.prop('compare').relevance, function(index, val){
+				plot_data.push([String(index), val.a, val.b, val.common/10]);
+			});
+			
+			data_not_ordered = plot_data;
+			
+			plotData.addColumn('number', 'Overlap x10');
 
-			
 			break;
 		default:
 
 			$("span#run_name_a").text(data.a.run_name);
 			$("span#run_name_b").text(data.b.run_name);
 			$("span#run_name_d").text("Diff(" + data.a.run_name + " - " + data.b.run_name + ")");
+			$(".radio_all").show();
 			
 			if (nCall == 3){
 				plotData.addColumn('number', 'Diff');
@@ -730,8 +775,9 @@ function drawLineChart(data, param, order, nCall){
 
 			break;
 	}
-	
+
 //	ordering of data ====================================================================
+	
 	if (order == 4){
 		v[1].sort(function(a, b){return b.value-a.value;});
 		v[2].sort(function(a, b){return b.value-a.value;});
@@ -747,12 +793,13 @@ function drawLineChart(data, param, order, nCall){
 		    return a1 < b1 ? 1: -1;
 		});
 	}
+	
 //========================================================================================	
 	plotData.addRows(data_tail);
 	
-	var documentWidth = $(document).width(); //retrieve current document width
-	var documentHeight = $(document).height(); //retrieve current document height
-	console.log(documentWidth);
+	var documentWidth = screen.width; //retrieve current document width
+	var documentHeight = screen.height; //retrieve current document height
+	
 	var options = {
 			title: param,
 			curveType: 'none',
@@ -800,5 +847,129 @@ function drawLineChart(data, param, order, nCall){
 			$(".run_data").show();
 		}
 	}
+	
+}
+// 
+function drawPieChart(target, param, title){
+	var plotData = new google.visualization.DataTable();
+	plotData.addColumn('string', 'ID');
+	plotData.addColumn('number', 'Amount');
+	
+	switch (param) {
+		case "relevance":
+			var run_name_a = $collection.prop('runs')[$collection.prop('compare').a].run_name;
+			var run_name_b = $collection.prop('runs')[$collection.prop('compare').b].run_name;
+			
+			a = 0;
+			b = 0;
+			c = 0;
+			
+			$.each($collection.prop('compare').relevance, function(index, val){
+				a += val.a;
+				b += val.b;
+				c += val.common;
+			});
+			
+			plot_data = [[run_name_a, a], [run_name_b, b], ['Overlap', c]];
+			break;
+	}
+	
+	plotData.addRows(plot_data);
+	
+	var options = {
+	  title: title,
+	  legend: {position: 'right'},
+	  pieSliceText: 'label',
+	  slices: {  1: {offset: 0.2},
+	            2: {offset: 0.3}
+	  },
+	  is3D: true,
+	  pieStartAngle: 100
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById(target));
+    chart.draw(plotData, options);
+	        
+};
+
+function drawBarChart(target, param, title){
+
+	var runs_names = [];
+	
+	switch (param) {
+		case "relevance":
+			
+			
+			var runs_ids = [];
+			var runs_value = [];
+			$.each($collection.prop('runs'), function(key, value){
+				runs_names.push(value.run_name);
+				runs_ids.push(key);
+			});
+			
+			$.each(runs_names, function(key, value){
+				var run_val = [];
+				run_val.push( value );
+				
+				$.each(runs_names, function(i, v){
+					if (v == value){
+						run_val.push( $collection.prop('runs')[runs_ids[i]].value.all.relevance.value );
+					}else{
+						run_val.push( 0 );
+					}					
+				});
+				run_val.push( '' );
+				runs_value.push(run_val);
+			});
+			break;
+	}
+	
+	runs_names.unshift("RUN name");
+	runs_names.push( { role: 'annotation' });
+	
+	runs_value.unshift(runs_names);
+	
+
+	var plotData = google.visualization.arrayToDataTable(runs_value);
+	
+	var options = {
+	        width: 600,
+	        height: 400,
+	        legend: { position: 'top', maxLines: 3 },
+	        bar: { groupWidth: '75%' },
+	        isStacked: true
+	      };
+	
+	var chart = new google.visualization.BarChart(document.getElementById("overviewChart"));
+    chart.draw(plotData, options);
+	        
+};
+
+function getRunsValues(){
+	var collection_id = $("#collection_sett").val();
+	$.each($collection.prop('runs'), function( run_id , value ) {
+		getRunValue( run_id , true);
+		getRunRel(collection_id, run_id, true);
+	});
+}
+
+function getRunValue(run_id, sync){
+	
+	var id_collection = $collection.prop('id');
+	
+	$.ajax({
+		url: 'getData.php?data=run_trec_val&id_user='+id_user+'&id_collection='+id_collection+'&id_run='+run_id,			// Url to which the request is send
+		type: "GET",				// Type of request to be send, called as method
+		enctype: 'multipart/form-data',
+		async: sync,
+		contentType: false,			// The content type used when sending data to the server.
+		cache: false,				// To unable request pages to be cached
+		processData:false,			// To send DOMDocument or non processed data file it is set to false
+		success: function(data)		// A function to be called if request succeeds
+		{
+			runValues = JSON.parse(data);
+			$.extend( true, $collection.prop("runs"), runValues );
+		}
+	});
 	
 }

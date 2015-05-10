@@ -83,3 +83,8 @@
 	background-color: rgba(70, 70, 70, 0.1);
 	padding-left: 10px;
 }
+
+.disabled{
+	disabled: disabled; 
+	display: inline
+}

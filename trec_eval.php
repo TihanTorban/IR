@@ -145,10 +145,10 @@ class Trec_eval{
 					
 					if ( $q_name != "all" ){
 						$trec_eval['value'][$param][$id_query]['value'] = $value;
-						$trec_eval['value'][$param][$id_query]['q_name'] = $q_name;
+						$trec_eval['value'][$param][$id_query]['name'] = $q_name;
 					}else{
 						$trec_eval['value']["all"][$param]['value'] = $value;
-						$trec_eval['value']["all"][$param]['q_name'] = $q_name;
+						$trec_eval['value']["all"][$param]['name'] = $q_name;
 					}
 				}
 				

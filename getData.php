@@ -66,6 +66,35 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 				}
 				break;
 				
+			case "run_trec_val":
+				try {
+					if ( isset($_GET["id_run"]) ){
+						$trec_eval = new Trec_eval($mysql, $id_user, $_GET["id_run"]);
+						
+						$result[$_GET["id_run"]] = $trec_eval->getTrecEval();
+						
+					}else{
+						error_msg("Not enough data".PHP_EOL);
+					}
+				} catch (Exception $e) {
+					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+				}
+				break;
+				
+			case "getRunRel":
+			
+				try {
+					if ( isset($_GET["id_run"]) && !empty($id_collection) ) {
+						$run = new Runs($mysql, $id_collection, $id_user);
+						$run_id = $_GET["id_run"];
+						$run_rel = $run->getRunRelValueById( $run_id );
+						$result[$run_id] = $run_rel;
+					}
+				} catch (Exception $e) {
+					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+				}
+				break;
+				
 			case "compareTwoRunRel":
 				
 				try {
@@ -76,8 +105,8 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 						$a_id = $_GET["run_id_a"];
 						$b_id = $_GET["run_id_b"];
 						
-						$a = $run_a->getRunValueById( $a_id );
-						$b = $run_b->getRunValueById( $b_id );
+						$a = $run_a->getRunRelValueById( $a_id );
+						$b = $run_b->getRunRelValueById( $b_id );
 						
 						
 						foreach ($a as $key => $value){

@@ -18,16 +18,21 @@
 	</div>
 	
 	<div class="row chart coll_sett" id="chart_param">
-		<div class="col-md-4 col-sm-5 col-xs-12">
+		<div class="col-md-3 col-sm-4 col-xs-12 parameters">
 			<label>Parameters</label>
 			<select name="trec_eval_param" id="trec_eval_param"></select>
 		</div>
-		<div class="col-md-8 col-sm-7 col-xs-12">
+		<div class="col-md-6 col-sm-4 col-xs-12 order">
 			<label>Ordered by:</label>
 			<input type="radio" name="order" value='1' checked/><span id='run_name_a'>A</span>
 			<input type="radio" name="order" value='2'/><span id='run_name_b'>B</span>
 			<input type="radio" name="order" value='3'/><span id='run_name_d'>Dif</span>
-			<input type="radio" name="order" value='4'/><span>all</span>
+			<input class="radio_all" type="radio" name="order" value='4'/><span class="radio_all">all</span>
+		</div>
+		<div class="col-md-3 col-sm-4 col-xs-12 chart_type">
+			<label>Chart type:</label>
+			<input type="radio" name="chart_type" value='line' checked/><span id='line'>Line</span>
+			<input type="radio" name="chart_type" value='pie'/><span id='pie'>Pie</span>
 		</div>
 	</div>
 	<div class="row chart coll_sett chart">
