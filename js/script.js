@@ -48,7 +48,10 @@ $collection.on( "changeCollection", function () {
 		
 		$(".runs_a_b").show();
 		
-		overview($(this).prop("id"));
+		$("#accordion").empty();
+		$("#overviewChart").empty();
+		
+//		overview($(this).prop("id"));
 		
 	}else{
 		$(".coll_sett").hide();
@@ -356,7 +359,7 @@ function getRunsNames(id_collection, id_user){
 				
 				$.each(runs, function( id_runs, value ) {
 					
-					var nlg = setNLG_(id_runs);
+//					var nlg = setNLG_(id_runs);
 					
 					$('.runs ul.a').prepend(
 						"<li role='presentation'>"+
@@ -365,8 +368,7 @@ function getRunsNames(id_collection, id_user){
 								"href='#' " +
 								"data-toggle='tooltip' " +
 								"class='run_item' " +
-								"id='"+id_runs+"' " +
-								"title='"+ value['run_name'] + " " + nlg +"'>" + 
+								"id='"+id_runs+"' >" + 
 								value['run_name'] + 
 							"</a>"+
 						"</li>"
@@ -378,8 +380,7 @@ function getRunsNames(id_collection, id_user){
 								"href='#' " +
 								"data-toggle='tooltip' " +
 								"class='run_item' " +
-								"id='"+id_runs+"' " +
-								"title='"+ value['run_name'] + " " + nlg +"'>" + 
+								"id='"+id_runs+"' >" + 
 							value['run_name'] + 
 							"</a>"+
 						"</li>"
@@ -557,49 +558,28 @@ function setParam(){
 
 }
 
-function overview(collection_id){
-
-	$("#overviewText").empty();
-	$("#overviewChart").empty();
-	$("#overviewText").append('<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>');
-
-	var i = 0;
-	$.each($collection.prop('runs'), function( run_id, value ) {
-		var run_name = value.run_name;
-		var text = run_name + " " + setNLG_(run_id) + "</br></br>";
-
-		$.each(value.value.all, function( param, val ) {
-			text += param + " = " + val.value + "</br>";
-		});
-		
-		if (i>0){
-			collapsed = "collapsed";
-			aria_expanded="false";
-			in_ = "";
-		}else{
-			collapsed = "";
-			aria_expanded="true";
-			in_ = " in";
-		}
-		
-		$("#accordion").prepend(
+function setOverview(run_id){
+	
+	var run_name = $collection.prop('runs')[run_id].run_name;
+	var nl_absolut_text = $collection.prop('runs')[run_id].nl.absolut;
+	
+	$("#accordion").prepend(
 			'<div class="panel panel-default">'+
 				'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
 					'<h4 class="panel-title">'+
-						'<a class="'+collapsed+'" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="'+aria_expanded+'" aria-controls="collapse'+run_id+'">'+
+						'<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="false" aria-controls="collapse'+run_id+'">'+
 							run_name+
 						'</a>'+
 					'</h4>'+
 				'</div>'+
-				'<div id="collapse'+run_id+'" class="panel-collapse collapse '+ in_+'" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
+				'<div id="collapse'+run_id+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
 					'<div class="panel-body">'+
-						text+
+						nl_absolut_text+
 					'</div>'+
 				'</div>'+
 			'</div>'
-		);
-		i++; 
-	});
+	);
+	
 	$("#overviewChart").append('<div id="overviewChart1"></div>');
 	drawBarChart("overviewChart1", "all-relevance", "Total Relevance");
 	
@@ -1000,6 +980,7 @@ function getRunsValues(){
 function getRunValue(run_id, sync){
 	
 	var id_collection = $collection.prop('id');
+	var run_name = $collection.prop('runs')[run_id].run_name;
 	
 	$.ajax({
 		url: 'getData.php?data=run_trec_val&id_user='+id_user+'&id_collection='+id_collection+'&id_run='+run_id,			// Url to which the request is send
@@ -1012,16 +993,29 @@ function getRunValue(run_id, sync){
 		success: function(data)		// A function to be called if request succeeds
 		{
 			runValues = JSON.parse(data);
-//			$.extend( true, $collection.prop("runs"), runValues );
 			
 			$collection.prop("runs")[run_id] = runValues[run_id];
 			
 			nl_absolut_text = getNL_absolut(run_id);
 			
 			$('.run_item#'+run_id).attr('title', nl_absolut_text);
-			
-			console.log(runValues);
-			$collection.prop("runs").nl_absolut = nl_text;
+
+			$("#accordion").prepend(
+					'<div class="panel panel-default">'+
+						'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
+							'<h4 class="panel-title">'+
+								'<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="false" aria-controls="collapse'+run_id+'">'+
+									run_name+
+								'</a>'+
+							'</h4>'+
+						'</div>'+
+						'<div id="collapse'+run_id+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
+							'<div class="panel-body">'+
+								nl_absolut_text+
+							'</div>'+
+						'</div>'+
+					'</div>'
+			);
 		}
 	});
 	
