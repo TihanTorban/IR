@@ -178,47 +178,80 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 					
 				break;
 				
-			case "overview":
+			case "absolutParamCut":
 				try {
-					if ( !empty($id_collection) ){
-						$query = "SELECT t.id_run AS id_run, t.name AS param, t.value AS value, r.name AS run_name
-									FROM trec_eval AS t 
-									INNER JOIN runs AS r 
-										ON t.id_run = r.id_run 
-									INNER JOIN queries AS q 
-										ON t.id_query = q.id 
-									WHERE r.id_collection = $id_collection
-									and q.id_query='all'";
+					if ( isset($_GET["param"]) ){
+						$param = $_GET["param"];
 						
+						$query = "SELECT AVG(T.value) AS avg, ".
+										"MIN(T.value) AS min, ".
+										"MAX(T.value) AS max ".
+									"FROM ir.trec_eval AS T ".
+									"INNER JOIN ir.queries AS Q ".
+										"ON T.id_query = Q.id ".
+									"WHERE T.name = '$param' ".
+										"AND  Q.id_query = 'all' ";
 						if($rslt = $mysql->query($query)){
 						
 							if ($rslt->num_rows > 0) {
-						
-								while ($row = $rslt->fetch_assoc()) {
-									$id_run = $row['id_run'];
-									$param =  $row['param'];
-									$value =  $row['value'];
-									$run_name =  $row['run_name'];
-										
-									$result[$id_run]['run_name'] = $run_name;
-									$result[$id_run]['run_values'][$param] = $value;
-								}
-						
-							} else {
-								error_msg("Not enough data".PHP_EOL);
+								$row = $rslt->fetch_assoc();
+								$result[$param]= $row;
+							}else{
+								error_msg("No data return".PHP_EOL);
 							}
-						
 						}else{
-							error_msg("Can not take data from DB");
+							error_msg("Feil in query".PHP_EOL);
 						}
 					}else{
 						error_msg("Not enough data".PHP_EOL);
 					}
 				} catch (Exception $e) {
-					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+					 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
 				}
 					
 				break;
+				
+// 			case "overview":
+// 				try {
+// 					if ( !empty($id_collection) ){
+// 						$query = "SELECT t.id_run AS id_run, t.name AS param, t.value AS value, r.name AS run_name
+// 									FROM trec_eval AS t 
+// 									INNER JOIN runs AS r 
+// 										ON t.id_run = r.id_run 
+// 									INNER JOIN queries AS q 
+// 										ON t.id_query = q.id 
+// 									WHERE r.id_collection = $id_collection
+// 									and q.id_query='all'";
+						
+// 						if($rslt = $mysql->query($query)){
+						
+// 							if ($rslt->num_rows > 0) {
+						
+// 								while ($row = $rslt->fetch_assoc()) {
+// 									$id_run = $row['id_run'];
+// 									$param =  $row['param'];
+// 									$value =  $row['value'];
+// 									$run_name =  $row['run_name'];
+										
+// 									$result[$id_run]['run_name'] = $run_name;
+// 									$result[$id_run]['run_values'][$param] = $value;
+// 								}
+						
+// 							} else {
+// 								error_msg("Not enough data".PHP_EOL);
+// 							}
+						
+// 						}else{
+// 							error_msg("Can not take data from DB");
+// 						}
+// 					}else{
+// 						error_msg("Not enough data".PHP_EOL);
+// 					}
+// 				} catch (Exception $e) {
+// 					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
+// 				}
+					
+// 				break;
 				
 			default:
 				$result = "";

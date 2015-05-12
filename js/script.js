@@ -23,6 +23,7 @@ $collection.on( "changeCollection", function () {
 	$(this).prop( "id", collection_id );
 	$(this).prop( "name", collection_name );
 	$(this).prop("compare", { a: -1, b: -1 });
+	$(this).prop("absolut", {});
 	
 	$(".chart").hide();
 	$("#plot").empty();
@@ -34,8 +35,15 @@ $collection.on( "changeCollection", function () {
 	$(".runs button.b").val(-1);
 	
 	if ( $(this).prop("id") != -1 ){
-		getRunsNames($(this).prop("id"), id_user);
 		
+		getAbsolutCut('Mean_Average_Precision', false);
+		getAbsolutCut('num_rel', false);
+		getAbsolutCut('num_rel_ret', false);
+		// get recall
+		getAbsolutRecall();
+		
+		getRunsNames($(this).prop("id"), id_user);
+
 		getRunsValues($(this).prop("id"));
 		
 		$(".runs_a_b").show();
@@ -235,29 +243,36 @@ $(document).ready(function (events) {
 		var chartType = $('input:radio[name="chart_type"]:checked').val();
 		
 		var plot_data = [];
-		
-		if (param == "relevance"){
-			getCompareRunsRel();
-			
-			$(".chart_type").children().prop('disabled',false);
-			
-			switch (chartType) {
-			
-				case "line":
-					$(".order").children().prop('disabled',false);
-					drawLineChart(plot_data, param, order, 3);
-					break;
-					
-				case "pie":
-					$(".order").children().prop('disabled',true);
-					drawPieChart('plot', param, "Relevance values");
-					break;
-			}
-			
-		}else{
-			$(".order").children().prop('disabled',false);
-			$(".chart_type").children().prop('disabled',true);
-			drawLineChart(trec_eval, param, order, 3);
+		switch (param){
+			case "relevance":
+				getCompareRunsRel();
+				
+				$(".chart_type").children().prop('disabled',false);
+				
+				switch (chartType) {
+				
+					case "line":
+						$(".order").children().prop('disabled',false);
+						drawLineChart(plot_data, param, order, 3);
+						break;
+						
+					case "pie":
+						$(".order").children().prop('disabled',true);
+						drawPieChart('plot', param, "Relevance values");
+						break;
+				}
+				break;
+			case "all":
+				$(".chart_type").children().prop('disabled',true);
+				$(".order").children().prop('disabled',true);
+				
+				drawBarChart("plot", "all-compare", "All parameters");
+				break;
+			default:
+				$(".order").children().prop('disabled',false);
+				$(".chart_type").children().prop('disabled',true);
+				drawLineChart(trec_eval, param, order, 3);
+				break;
 		}
 		
 	});
@@ -340,6 +355,7 @@ function getRunsNames(id_collection, id_user){
 				$('.runs ul').empty();
 				
 				$.each(runs, function( id_runs, value ) {
+					
 					var nlg = setNLG_(id_runs);
 					
 					$('.runs ul.a').prepend(
@@ -518,7 +534,6 @@ function getTrec_eval(run_id_a, run_id_b, id_collection){
 		success: function(data)		// A function to be called if request succeeds
 		{
 			var trec_eval = JSON.parse(data);
-//			console.log(trec_eval);
 			
 			$.extend( true, $collection.prop("runs"), trec_eval );
 		}
@@ -537,97 +552,9 @@ function setParam(){
 			$("#trec_eval_param").append("<option value='"+param+"' >"+param+"</option>");
 		}
 	});
-	
-//	$("#trec_eval_param").append("<option value='runs_relevance' >runs relevance</option>");
-}
 
-function setNL(){
-	
-	var run_id_a = $collection.prop("compare").a;
-	var run_id_b = $collection.prop("compare").b;
-	
-	var NL = "";
-	var map_a = $collection.prop("runs")[run_id_a].value.all.Mean_Average_Precision.value;
-	var map_b = $collection.prop("runs")[run_id_b].value.all.Mean_Average_Precision.value;
-	
-	var recall_a = $collection.prop("runs")[run_id_a].value.all.num_rel_ret.value/$collection.prop("runs")[run_id_a].value.all.num_rel.value;
-	var recall_b = $collection.prop("runs")[run_id_b].value.all.num_rel_ret.value/$collection.prop("runs")[run_id_b].value.all.num_rel.value;
-	
-	var rr_a = $collection.prop("runs")[run_id_a].value.all.recip_rank.value;
-	var rr_b = $collection.prop("runs")[run_id_b].value.all.recip_rank.value;
-	
-	
-	$("#nl_abs_a").text($(".runs a#"+run_id_a).attr('title'));
-	$("#nl_abs_b").text($(".runs a#"+run_id_b).attr('title'));
-	
-	if(map_a > map_b){
-		NL += "Comparatively, Method "+$collection.prop("runs")[run_id_a].run_name+" has a higher quality of returned results than Method "+$collection.prop("runs")[run_id_b].run_name+". ";
-	}else{
-		NL += "Comparatively, Method "+$collection.prop("runs")[run_id_a].run_name+" has a lower quality of returned results than method "+$collection.prop("runs")[run_id_a].run_name+".  ";
-	}
-	
-	if(recall_a > recall_b){
-		NL += "Furthermore, Method "+$collection.prop("runs")[run_id_a].run_name+" returns more relevant documents. ";
-	}else{
-		NL += "Furthermore, Method "+$collection.prop("runs")[run_id_a].run_name+" returns less relevant documents. ";
-	}
-	
-	if(rr_a > rr_b){
-		NL += "Finally, Method "+$collection.prop("runs")[run_id_a].run_name+"’s highest ranking results is of a higher quality. ";
-	}else{
-		NL += "Finally, Method "+$collection.prop("runs")[run_id_a].run_name+"’s highest ranking result is of a lower quality. ";
-	}
-	
-	$("#nl_text").text(NL);
-	$(".naturalLG").show();
-}
+//	$('#trec_eval_param').val("relevance");
 
-function getAVRparam(run_id, param){
-	var id_collection = $("#collection_sett").val();
-	var avr;
-
-	$.ajax({
-		url: 'getData.php?data=avgParam&param='+param+'&id_user='+id_user+'&id_run='+run_id+'&id_collection='+id_collection,			// Url to which the request is send
-		type: "GET",				// Type of request to be send, called as method
-		enctype: 'multipart/form-data',
-		async: false,
-		contentType: false,			// The content type used when sending data to the server.
-		cache: false,				// To unable request pages to be cached
-		processData:false,			// To send DOMDocument or non processed data file it is set to false
-		success: function(data)		// A function to be called if request succeeds
-		{
-			avr = JSON.parse(data);
-			
-//			console.log(avr);
-		}
-	});
-	
-	return avr;
-}
-
-function setNLG_(id){
-
-	var run_id = id;
-	
-	var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
-	
-	var avrRecal = getAVRparam(run_id, 'recall');
-	var result;
-	if (avrMAP['id'] < avrMAP['avrColl']){
-		if(avrRecal['id']<avrRecal['avrColl']){
-			result = natural_a;
-		}else{
-			result = natural_c;
-		}
-	}else{
-		if(avrRecal['id']<avrRecal['avrColl']){
-			result = natural_b;
-		}else{
-			result = natural_d;
-		}
-	}
-		
-	return result;
 }
 
 function overview(collection_id){
@@ -674,13 +601,11 @@ function overview(collection_id){
 		i++; 
 	});
 	$("#overviewChart").append('<div id="overviewChart1"></div>');
-	drawBarChart("overviewChart1", "all-relevance", "c");
+	drawBarChart("overviewChart1", "all-relevance", "Total Relevance");
 	
 	$("#overviewChart").append('<div id="overviewChart2"></div>');
-	drawPieChart("overviewChart2", "all-relevance", "c");
-	
-	$("#overviewChart").append('<div id="overviewChart3"></div>');
-	drawBarChart("overviewChart3", "all", "c");
+	drawPieChart("overviewChart2", "all-relevance", "Total Relevance");
+
 }
 
 function drawLineChart(data, param, order, nCall){
@@ -894,7 +819,7 @@ function drawPieChart(target, param, title){
 	            2: {offset: 0.3}
 	  },
 	  is3D: true,
-	  pieStartAngle: 100
+	  pieStartAngle: 50
     };
 
     var chart = new google.visualization.PieChart(document.getElementById(target));
@@ -938,6 +863,15 @@ function drawBarChart(target, param, title){
 			
 			plotData = runs_value;
 			
+			var options = {
+					title : title,
+			        width: 600,
+			        height: 400,
+			        legend: { position: 'right', maxLines: 3 },
+			        bar: { groupWidth: '75%' },
+			        isStacked: true
+			      };
+			
 			break;
 		case "all":
 			
@@ -946,8 +880,6 @@ function drawBarChart(target, param, title){
 			
 			var runs = $collection.prop('runs');
 			var run_params = runs[Object.keys(runs)[0]].value.all;
-			
-			console.log(run_params);
 			
 			$.each(runs, function(key, value){
 				header.push(value.run_name);			
@@ -959,7 +891,64 @@ function drawBarChart(target, param, title){
 					elem.push(param);
 					
 					$.each(runs, function(run_id, val){
-						elem.push( parseInt(val.value.all[param].value) );
+						if (parseFloat(val.value.all[param].value)<2 ){
+							elem.push( parseFloat(val.value.all[param].value) );
+						}else{
+							elem.push(null);
+						}
+					});
+					
+					elem.push('');
+					
+					tail.push(elem);
+				}
+			});
+			header.push({ role: 'annotation' });
+			
+			header.unshift("RUN name");
+			
+			tail.unshift(header);
+			
+			plotData = tail;
+			var documentWidth = screen.width; //retrieve current document width
+			var documentHeight = screen.height; //retrieve current document height
+
+			var options = {
+					title : title,
+					height: documentHeight/1.5,
+					width: documentWidth,
+			        legend: { position: 'bottom', maxLines: 3 },
+			        chartArea: {left:50,top:40,width:'90%'},
+			        bar: { groupWidth: '75%' },
+			        isStacked: true
+			      };
+			
+			break;
+		case "all-compare":
+			
+			var header = [];
+			var tail = [];
+			
+			var runs = $collection.prop('runs');
+			var run_params = runs[$collection.prop('compare').a].value.all;
+			
+			$.each($collection.prop('compare'), function(key, value){
+				header.push(runs[value].run_name);			
+			});
+			
+			$.each(run_params, function(param, value){
+				if (param != 'runid'){
+					var elem = [];
+					elem.push(param);
+					
+					$.each($collection.prop('compare'), function(id, run_id){
+						var v = parseFloat($collection.prop('runs')[run_id].value.all[param].value);
+						console.log(run_id);
+						if ( v<2 ){
+							elem.push( v );
+						}else{
+							elem.push(null);
+						}
 					});
 					
 					elem.push('');
@@ -975,24 +964,25 @@ function drawBarChart(target, param, title){
 			
 			plotData = tail;
 			
-			console.log(header);
 			console.log(tail);
+			
+			var documentWidth = screen.width; //retrieve current document width
+			var documentHeight = screen.height; //retrieve current document height
+
+			var options = {
+					title : title,
+					height: documentHeight/1.5,
+					width: documentWidth,
+			        legend: { position: 'bottom', maxLines: 3 },
+			        chartArea: {left:50,top:40,width:'90%'},
+			        bar: { groupWidth: '75%' },
+			        isStacked: true
+			      };
 			
 			break;
 	}
 	
-	
-	
 	var plotData = google.visualization.arrayToDataTable(plotData);
-	
-	var options = {
-			title : title,
-	        width: 600,
-	        height: 400,
-	        legend: { position: 'right', maxLines: 3 },
-	        bar: { groupWidth: '75%' },
-	        isStacked: true
-	      };
 	
 	var chart = new google.visualization.ColumnChart(document.getElementById(target));
     chart.draw(plotData, options);
@@ -1022,8 +1012,283 @@ function getRunValue(run_id, sync){
 		success: function(data)		// A function to be called if request succeeds
 		{
 			runValues = JSON.parse(data);
-			$.extend( true, $collection.prop("runs"), runValues );
+//			$.extend( true, $collection.prop("runs"), runValues );
+			
+			$collection.prop("runs")[run_id] = runValues[run_id];
+			
+			nl_absolut_text = getNL_absolut(run_id);
+			
+			$('.run_item#'+run_id).attr('title', nl_absolut_text);
+			
+			console.log(runValues);
+			$collection.prop("runs").nl_absolut = nl_text;
 		}
 	});
 	
 }
+
+// NL=============================================================================
+
+function getAbsolutCut( param , sync){
+	var id_collection = $collection.prop('id');
+	$.ajax({
+		url: 'getData.php?data=absolutParamCut&param='+param+'&id_user='+id_user+'&id_collection='+id_collection,			// Url to which the request is send
+		type: "GET",				// Type of request to be send, called as method
+		enctype: 'multipart/form-data',
+		async: sync,
+		contentType: false,			// The content type used when sending data to the server.
+		cache: false,				// To unable request pages to be cached
+		processData:false,			// To send DOMDocument or non processed data file it is set to false
+		success: function(data)		// A function to be called if request succeeds
+		{
+			absolut = JSON.parse(data);
+			$.extend( true, $collection.prop('absolut'), absolut );
+
+		}
+	});
+}
+
+function getAbsolutRecall(){
+	var recall = {recall:{}};
+	if (typeof $collection.prop('absolut').num_rel.avg=="undefine" || 
+		typeof $collection.prop('absolut').num_rel_ret.avg=="undefine"){
+		console.log('upss');
+	}else{
+		$.each( $collection.prop('absolut').num_rel, function(key, value){
+			if( value != 0){
+				recall.recall[key] = $collection.prop('absolut').num_rel_ret[key]/value;
+			}else{
+				recall.recall[key] = 0;
+			}
+		} );
+	}
+	$.extend( true, $collection.prop('absolut'), recall );
+};
+
+//=========================================================
+function getAVRparam(run_id, param){
+	var id_collection = $collection.prop('id');
+	var avr;
+
+	$.ajax({
+		url: 'getData.php?data=avgParam&param='+param+'&id_user='+id_user+'&id_run='+run_id+'&id_collection='+id_collection,			// Url to which the request is send
+		type: "GET",				// Type of request to be send, called as method
+		enctype: 'multipart/form-data',
+		async: false,
+		contentType: false,			// The content type used when sending data to the server.
+		cache: false,				// To unable request pages to be cached
+		processData:false,			// To send DOMDocument or non processed data file it is set to false
+		success: function(data)		// A function to be called if request succeeds
+		{
+			avr = JSON.parse(data);
+		}
+	});
+	
+	return avr;
+}
+
+function getNL_absolut(run_id){
+	var run = $collection.prop('runs')[run_id];
+	var absolut = $collection.prop('absolut');
+	
+	var run_name = run.run_name;
+	
+	var run_map = run.value.all.Mean_Average_Precision.value;
+	
+	var run_num_rel_ret = run.value.all.num_rel_ret.value;
+	var run_num_rel = run.value.all.num_rel.value;
+	
+	if (run_num_rel != 0){
+		run_recall = run_num_rel_ret/run_num_rel;
+	}else{
+		run_recall = 0;
+	}
+	
+	var map_min = absolut.Mean_Average_Precision.min;
+	var map_max = absolut.Mean_Average_Precision.max;
+	var map_avg = absolut.Mean_Average_Precision.avg;
+
+	var min_avg_map = map_min + (map_avg - map_min)/2;
+	var max_avg_map = map_avg + (map_max - map_avg)/2;
+	
+	var map_scale = false;
+	
+	switch(true) {
+		case run_map >= map_min && run_map < min_avg_map:
+//			alert(run_name+"/n min MAP ");
+			map_scale = 'min';
+		break;
+		
+		case run_map >= min_avg_map && run_map < max_avg_map:
+//			alert(run_name+" medium MAP");
+			map_scale = 'medium';
+		break;
+		
+		case run_map >= max_avg_map && run_map <= map_max:
+//			alert(run_name+" max MAP");
+			map_scale = 'max';
+		break;
+		
+		default:
+			map_scale = '';
+		break;
+	}
+	
+	var recall_min = absolut.recall.min;
+	var recall_max = absolut.recall.max;
+	var recall_avg = absolut.recall.avg;
+	
+	var min_avg_recall = recall_min + (recall_avg - recall_min)/2;
+	var max_avg_recall = recall_avg + (recall_max - recall_avg)/2;
+	
+	switch(true){
+		case run_recall >= recall_min && run_recall < min_avg_recall:
+//			alert(run_name+" min RECALL");
+			switch(map_scale){
+			case 'min':
+				nl_text = 'Method '+ run_name +' is weak in finding relevant results, '+
+					'and the returned results are of low quality. '+
+					'Therefore, this method is generally not recommended.';
+				break;
+				
+			case 'medium':
+				nl_text =  'Method '+ run_name +' is weak in finding relevant results, '+
+						'and the returned results are of medium quality. '+
+						'Therefore, this method could be acceptable where quality is important.';
+				break;
+				
+			case 'max':
+				nl_text =  'Method '+ run_name +' is weak in finding relevant results, '+
+						'but the returned results are of high quality. '+
+						'Therefore, this method is excellent where only quality is important.';
+				break;
+				
+			}
+		break;
+		
+		case run_recall >= min_avg_recall && run_recall < max_avg_recall:
+//			alert(run_name+" medium RECALL");
+			switch(map_scale){
+			case 'min':
+				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+						'and the returned results are of low quality. '+
+						'Therefore, this method could be acceptable where quantity is important.';
+				break;
+				
+			case 'medium':
+				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+						'and the returned results are of medium quality. '+
+						'Therefore, this method could be acceptable where both quality and quantity is important.';
+				break;
+				
+			case 'max':
+				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+						'and the returned results are of high quality. '+
+						'Therefore, this method is excellent where quality is important, '+
+						'and acceptable where quantity is important.';
+				break;
+			
+			}
+		break;
+		
+		case run_recall >= max_avg_recall && run_recall <= recall_max:
+//			alert(run_name+" max RECALL");
+			switch(map_scale){
+			case 'min':
+				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+						'and the returned results are of low quality. '+
+						'Therefore, this method could be excellent where only quantity is important.';
+				break;
+				
+			case 'medium':
+				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+						'and the returned results are of medium quality. '+
+						'Therefore, this method could be acceptable where quality is important, '+
+						'and excellent where quantity is important.';
+				break;
+				
+			case 'max':
+				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+						'and the returned results are of high quality. '+
+						'Therefore, this method is generally recommended.';
+				break;
+				
+			}
+		break;
+		
+		default:
+			console.log(run.run_name+" ERROR RECALL");
+		break;
+	}
+	
+	$.extend( true, run, {nl: {absolut: nl_text}} );
+
+	return nl_text;
+}
+
+function setNL(){
+	
+	var run_id_a = $collection.prop("compare").a;
+	var run_id_b = $collection.prop("compare").b;
+	
+	var NL = "";
+	var map_a = $collection.prop("runs")[run_id_a].value.all.Mean_Average_Precision.value;
+	var map_b = $collection.prop("runs")[run_id_b].value.all.Mean_Average_Precision.value;
+	
+	var recall_a = $collection.prop("runs")[run_id_a].value.all.num_rel_ret.value/$collection.prop("runs")[run_id_a].value.all.num_rel.value;
+	var recall_b = $collection.prop("runs")[run_id_b].value.all.num_rel_ret.value/$collection.prop("runs")[run_id_b].value.all.num_rel.value;
+	
+	var rr_a = $collection.prop("runs")[run_id_a].value.all.recip_rank.value;
+	var rr_b = $collection.prop("runs")[run_id_b].value.all.recip_rank.value;
+	
+	
+	$("#nl_abs_a").text($(".runs a#"+run_id_a).attr('title'));
+	$("#nl_abs_b").text($(".runs a#"+run_id_b).attr('title'));
+	
+	if(map_a > map_b){
+		NL += "Comparatively, Method "+$collection.prop("runs")[run_id_a].run_name+" has a higher quality of returned results than Method "+$collection.prop("runs")[run_id_b].run_name+". ";
+	}else{
+		NL += "Comparatively, Method "+$collection.prop("runs")[run_id_a].run_name+" has a lower quality of returned results than method "+$collection.prop("runs")[run_id_a].run_name+".  ";
+	}
+	
+	if(recall_a > recall_b){
+		NL += "Furthermore, Method "+$collection.prop("runs")[run_id_a].run_name+" returns more relevant documents. ";
+	}else{
+		NL += "Furthermore, Method "+$collection.prop("runs")[run_id_a].run_name+" returns less relevant documents. ";
+	}
+	
+	if(rr_a > rr_b){
+		NL += "Finally, Method "+$collection.prop("runs")[run_id_a].run_name+"’s highest ranking results is of a higher quality. ";
+	}else{
+		NL += "Finally, Method "+$collection.prop("runs")[run_id_a].run_name+"’s highest ranking result is of a lower quality. ";
+	}
+	
+	$("#nl_text").text(NL);
+	$(".naturalLG").show();
+}
+
+function setNLG_(id){
+
+	var run_id = id;
+	
+	var avrMAP = getAVRparam(run_id, 'Mean_Average_Precision');
+	
+	var avrRecal = getAVRparam(run_id, 'recall');
+	var result;
+	if (avrMAP['id'] < avrMAP['avrColl']){
+		if(avrRecal['id']<avrRecal['avrColl']){
+			result = natural_a;
+		}else{
+			result = natural_c;
+		}
+	}else{
+		if(avrRecal['id']<avrRecal['avrColl']){
+			result = natural_b;
+		}else{
+			result = natural_d;
+		}
+	}
+		
+	return result;
+}
+
