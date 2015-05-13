@@ -35,6 +35,8 @@ $collection.on( "changeCollection", function () {
 	$(".runs button.b").val(-1);
 	
 	if ( $(this).prop("id") != -1 ){
+		$("#accordion").empty();
+		$("#overviewChart").empty();
 		
 		getAbsolutCut('Mean_Average_Precision', false);
 		getAbsolutCut('num_rel', false);
@@ -48,10 +50,7 @@ $collection.on( "changeCollection", function () {
 		
 		$(".runs_a_b").show();
 		
-		$("#accordion").empty();
-		$("#overviewChart").empty();
-		
-//		overview($(this).prop("id"));
+
 		
 	}else{
 		$(".coll_sett").hide();
@@ -66,6 +65,9 @@ $collection.on( "compareToRuns", function () {
 	
 	if ( run_id_a > -1 && run_id_b > -1){
 		
+		$(".nl").text("");
+		$(".naturalLG").hide();
+		
 		$(this).prop("compare", { a: run_id_a, b: run_id_b });
 		
 		$.each($(this).prop("compare"), function(id, value){
@@ -76,7 +78,7 @@ $collection.on( "compareToRuns", function () {
 		
 		setParam();
 	
-		setNL();
+		setNL_compare();
 		
 		var param = $("#trec_eval_param").val();
 		var order = $('input:radio[name="order"]:checked').val();
@@ -560,8 +562,13 @@ function setParam(){
 
 function setOverview(run_id){
 	
-	var run_name = $collection.prop('runs')[run_id].run_name;
-	var nl_absolut_text = $collection.prop('runs')[run_id].nl.absolut;
+	var run = $collection.prop('runs')[run_id];
+	var run_name = run.run_name;
+	var text_nl_absolut = run.nl.absolut;
+	var text_param = "";
+	$.each(run.value.all, function( param, val ) {
+		text_param += param + " = " + val.value + "</br>";
+	});
 	
 	$("#accordion").prepend(
 			'<div class="panel panel-default">'+
@@ -574,17 +581,13 @@ function setOverview(run_id){
 				'</div>'+
 				'<div id="collapse'+run_id+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
 					'<div class="panel-body">'+
-						nl_absolut_text+
+						'<div id="'+run_id+'" class="overview nl">'+text_nl_absolut+'</div>'+
+						'</br>'+
+						'<pre id="'+run_id+'" class="overview param">'+text_param+'</pre>'+
 					'</div>'+
 				'</div>'+
 			'</div>'
 	);
-	
-	$("#overviewChart").append('<div id="overviewChart1"></div>');
-	drawBarChart("overviewChart1", "all-relevance", "Total Relevance");
-	
-	$("#overviewChart").append('<div id="overviewChart2"></div>');
-	drawPieChart("overviewChart2", "all-relevance", "Total Relevance");
 
 }
 
@@ -972,15 +975,22 @@ function drawBarChart(target, param, title){
 function getRunsValues(){
 	var collection_id = $("#collection_sett").val();
 	$.each($collection.prop('runs'), function( run_id , value ) {
-		getRunValue( run_id , true);
-		getRunRel(collection_id, run_id, true);
+		getRunValue( run_id , false);
+		getRunRel(collection_id, run_id, false);
 	});
+	
+	getNL_collection();
+
+	$("#overviewChart").append('<div id="overviewChart1"></div>');
+	drawBarChart("overviewChart1", "all-relevance", "Total Relevance");
+//	
+	$("#overviewChart").append('<div id="overviewChart2"></div>');
+	drawPieChart("overviewChart2", "all-relevance", "Total Relevance");
 }
 
 function getRunValue(run_id, sync){
 	
 	var id_collection = $collection.prop('id');
-	var run_name = $collection.prop('runs')[run_id].run_name;
 	
 	$.ajax({
 		url: 'getData.php?data=run_trec_val&id_user='+id_user+'&id_collection='+id_collection+'&id_run='+run_id,			// Url to which the request is send
@@ -999,23 +1009,8 @@ function getRunValue(run_id, sync){
 			nl_absolut_text = getNL_absolut(run_id);
 			
 			$('.run_item#'+run_id).attr('title', nl_absolut_text);
-
-			$("#accordion").prepend(
-					'<div class="panel panel-default">'+
-						'<div class="panel-heading" role="tab" id="heading'+run_id+'">'+
-							'<h4 class="panel-title">'+
-								'<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse'+run_id+'" aria-expanded="false" aria-controls="collapse'+run_id+'">'+
-									run_name+
-								'</a>'+
-							'</h4>'+
-						'</div>'+
-						'<div id="collapse'+run_id+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'+run_id+'">'+
-							'<div class="panel-body">'+
-								nl_absolut_text+
-							'</div>'+
-						'</div>'+
-					'</div>'
-			);
+			
+			setOverview(run_id);
 		}
 	});
 	
@@ -1135,26 +1130,28 @@ function getNL_absolut(run_id){
 	var min_avg_recall = recall_min + (recall_avg - recall_min)/2;
 	var max_avg_recall = recall_avg + (recall_max - recall_avg)/2;
 	
+	var nl_text = 'Compared to the average across all collections, ';
+	
 	switch(true){
 		case run_recall >= recall_min && run_recall < min_avg_recall:
 //			alert(run_name+" min RECALL");
 			switch(map_scale){
 			case 'min':
-				nl_text = 'Method '+ run_name +' is weak in finding relevant results, '+
+				nl_text += run_name +' is weak in finding relevant results, '+
 					'and the returned results are of low quality. '+
-					'Therefore, this method is generally not recommended.';
+					'Therefore, this method is generally not recommended.\n';
 				break;
 				
 			case 'medium':
-				nl_text =  'Method '+ run_name +' is weak in finding relevant results, '+
+				nl_text +=  run_name +' is weak in finding relevant results, '+
 						'and the returned results are of medium quality. '+
-						'Therefore, this method could be acceptable where quality is important.';
+						'Therefore, this method could be acceptable where quality is important.\n';
 				break;
 				
 			case 'max':
-				nl_text =  'Method '+ run_name +' is weak in finding relevant results, '+
+				nl_text +=  run_name +' is weak in finding relevant results, '+
 						'but the returned results are of high quality. '+
-						'Therefore, this method is excellent where only quality is important.';
+						'Therefore, this method is excellent where only quality is important.\n';
 				break;
 				
 			}
@@ -1164,22 +1161,22 @@ function getNL_absolut(run_id){
 //			alert(run_name+" medium RECALL");
 			switch(map_scale){
 			case 'min':
-				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+				nl_text +=  run_name +' is mediocre in finding relevant results, '+
 						'and the returned results are of low quality. '+
-						'Therefore, this method could be acceptable where quantity is important.';
+						'Therefore, this method could be acceptable where quantity is important.\n';
 				break;
 				
 			case 'medium':
-				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+				nl_text +=  run_name +' is mediocre in finding relevant results, '+
 						'and the returned results are of medium quality. '+
-						'Therefore, this method could be acceptable where both quality and quantity is important.';
+						'Therefore, this method could be acceptable where both quality and quantity is important.\n';
 				break;
 				
 			case 'max':
-				nl_text =  'Method '+ run_name +' is mediocre in finding relevant results, '+
+				nl_text +=  run_name +' is mediocre in finding relevant results, '+
 						'and the returned results are of high quality. '+
 						'Therefore, this method is excellent where quality is important, '+
-						'and acceptable where quantity is important.';
+						'and acceptable where quantity is important.\n';
 				break;
 			
 			}
@@ -1189,22 +1186,22 @@ function getNL_absolut(run_id){
 //			alert(run_name+" max RECALL");
 			switch(map_scale){
 			case 'min':
-				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+				nl_text +=  run_name +' is strong in finding relevant results, '+
 						'and the returned results are of low quality. '+
-						'Therefore, this method could be excellent where only quantity is important.';
+						'Therefore, this method could be excellent where only quantity is important.\n';
 				break;
 				
 			case 'medium':
-				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+				nl_text +=  run_name +' is strong in finding relevant results, '+
 						'and the returned results are of medium quality. '+
 						'Therefore, this method could be acceptable where quality is important, '+
 						'and excellent where quantity is important.';
 				break;
 				
 			case 'max':
-				nl_text =  'Method '+ run_name +' is strong in finding relevant results, '+
+				nl_text +=  run_name +' is strong in finding relevant results, '+
 						'and the returned results are of high quality. '+
-						'Therefore, this method is generally recommended.';
+						'Therefore, this method is generally recommended.\n';
 				break;
 				
 			}
@@ -1220,12 +1217,103 @@ function getNL_absolut(run_id){
 	return nl_text;
 }
 
-function setNL(){
+function getNL_collection(){
+	orderedByMAP();
+	orderedByRECALL();
+
+	$.each($collection.prop('runs'), function(run_id, value){
+		
+		var nl_absolut = $collection.prop('runs')[run_id].nl.absolut;
+		
+		text = "Within the current collection "+value.run_name+" is ranked "+value.map_rank+" for MAP ("+
+				value.value.all.Mean_Average_Precision.value+") and "+
+				value.recall_rank+" for Recall ("+value.recall.toFixed(4)+").";
+		
+		$("#"+run_id+".nl").append(text);
+		
+		$.extend(true, $collection.prop('runs')[run_id].nl, {collection: nl_absolut+text});
+
+	});
+}
+
+function orderedByMAP(){
+	var runs_map = [];
+	$.each($collection.prop('runs'), function(run_id, value){
+		runs_map.push({run_id: run_id, 
+						run_name: value.run_name, 
+						Mean_Average_Precision: value.value.all.Mean_Average_Precision.value})
+	});
+	
+	runs_map = runs_map.sort(function(a, b){
+	    return b.Mean_Average_Precision-a.Mean_Average_Precision;
+	});
+	
+	$.each(runs_map, function(key, value){
+		switch(true){
+		case key == 0:
+			$.extend(true, $collection.prop('runs')[value.run_id], {map_rank: "first"});
+			break;
+		case key == 1:
+			$.extend(true, $collection.prop('runs')[value.run_id], {map_rank: "2nd"});
+			break;
+		case key == 2:
+			$.extend(true, $collection.prop('runs')[value.run_id], {map_rank: "3rd"});
+			break;
+		case key+1 == runs_map.length:
+			$.extend(true, $collection.prop('runs')[value.run_id], {map_rank: "last"});
+			break;
+		default:
+			$.extend(true, $collection.prop('runs')[value.run_id], {map_rank: key+"th"});
+			break;
+		}
+	});
+};
+
+function orderedByRECALL(){
+	var runs_recall = [];
+	$.each($collection.prop('runs'), function(run_id, value){
+		var recall = 0;
+		if( value.value.all.num_rel.value != 0){
+			recall = value.value.all.num_rel_ret.value/value.value.all.num_rel.value;
+		}
+		
+		runs_recall.push({run_id: run_id, 
+						run_name: value.run_name, 
+						recall: recall});
+	});
+	
+	runs_recall = runs_recall.sort(function(a, b){return b.recall-a.recall;});
+	
+	$.each(runs_recall, function(key, value){
+		switch(true){
+		case key == 0:
+			$.extend(true, $collection.prop('runs')[value.run_id], {recall_rank: "first"});
+			break;
+		case key == 1:
+			$.extend(true, $collection.prop('runs')[value.run_id], {recall_rank: "2nd"});
+			break;
+		case key == 2:
+			$.extend(true, $collection.prop('runs')[value.run_id], {recall_rank: "3rd"});
+			break;
+		case key+1 == runs_recall.length:
+			$.extend(true, $collection.prop('runs')[value.run_id], {recall_rank: "last"});
+			break;
+		default:
+			$.extend(true, $collection.prop('runs')[value.run_id], {recall_rank: key+"th"});
+			break;
+		}
+
+		$.extend(true, $collection.prop('runs')[value.run_id], {recall : value.recall});
+	});
+};
+
+function setNL_compare(){
 	
 	var run_id_a = $collection.prop("compare").a;
 	var run_id_b = $collection.prop("compare").b;
-	
+
 	var NL = "";
+	
 	var map_a = $collection.prop("runs")[run_id_a].value.all.Mean_Average_Precision.value;
 	var map_b = $collection.prop("runs")[run_id_b].value.all.Mean_Average_Precision.value;
 	
@@ -1236,8 +1324,8 @@ function setNL(){
 	var rr_b = $collection.prop("runs")[run_id_b].value.all.recip_rank.value;
 	
 	
-	$("#nl_abs_a").text($(".runs a#"+run_id_a).attr('title'));
-	$("#nl_abs_b").text($(".runs a#"+run_id_b).attr('title'));
+	$("#nl_abs_a").text($collection.prop("runs")[run_id_a].nl.collection);
+	$("#nl_abs_b").text($collection.prop("runs")[run_id_b].nl.collection);
 	
 	if(map_a > map_b){
 		NL += "Comparatively, Method "+$collection.prop("runs")[run_id_a].run_name+" has a higher quality of returned results than Method "+$collection.prop("runs")[run_id_b].run_name+". ";

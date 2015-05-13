@@ -5,8 +5,6 @@ require("collection.php");
 require("runs.php");
 require("trec_eval.php");
 
-// testPrint($_GET);
-
 if (isset($_GET["data"]) && isset($_GET['id_user'])){
 	
 	$id_user = intval($_GET['id_user']);
@@ -211,55 +209,11 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 					
 				break;
 				
-// 			case "overview":
-// 				try {
-// 					if ( !empty($id_collection) ){
-// 						$query = "SELECT t.id_run AS id_run, t.name AS param, t.value AS value, r.name AS run_name
-// 									FROM trec_eval AS t 
-// 									INNER JOIN runs AS r 
-// 										ON t.id_run = r.id_run 
-// 									INNER JOIN queries AS q 
-// 										ON t.id_query = q.id 
-// 									WHERE r.id_collection = $id_collection
-// 									and q.id_query='all'";
-						
-// 						if($rslt = $mysql->query($query)){
-						
-// 							if ($rslt->num_rows > 0) {
-						
-// 								while ($row = $rslt->fetch_assoc()) {
-// 									$id_run = $row['id_run'];
-// 									$param =  $row['param'];
-// 									$value =  $row['value'];
-// 									$run_name =  $row['run_name'];
-										
-// 									$result[$id_run]['run_name'] = $run_name;
-// 									$result[$id_run]['run_values'][$param] = $value;
-// 								}
-						
-// 							} else {
-// 								error_msg("Not enough data".PHP_EOL);
-// 							}
-						
-// 						}else{
-// 							error_msg("Can not take data from DB");
-// 						}
-// 					}else{
-// 						error_msg("Not enough data".PHP_EOL);
-// 					}
-// 				} catch (Exception $e) {
-// 					error_msg("Exception: {$e->getMessage()}".PHP_EOL);
-// 				}
-					
-// 				break;
-				
 			default:
 				$result = "";
 				break;
 		}
 		$mysql->close();
-		
-// 		testPrint($result);
 		
 		echo json_encode($result);
 		
@@ -267,10 +221,5 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 		 error_msg("Exception: {$e->getMessage()}".PHP_EOL);
 	}
 }
-
-
-
-
-// print_r($result);
 
 ?>

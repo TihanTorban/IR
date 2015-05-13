@@ -44,20 +44,20 @@
 	<div class="row coll_sett naturalLG">
 		<div class="col-md-12 col-sm-12 col-xs-12">
 			<div class='trec_eval_data naturalLG'>
-			<h3 id="nl_head">Natural language results</h3>
-			<span id="nl_abs_a"></span></br></br>
-			<span id="nl_abs_b"></span></br></br>
-			<span id="nl_text"></span>
+				<h3 id="nl_head">Natural language results</h3>
+				<span id="nl_abs_a" class="nl"></span></br></br>
+				<span id="nl_abs_b" class="nl"></span></br></br>
+				<span id="nl_text" class="nl"></span>
 			</div>
 		</div>
 	</div>
 	
 	<div class="row coll_sett run_data">
 		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='a'></div>
+			<pre class='a'></pre>
 		</div>
 		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class='b'></div>
+			<pre class='b'></pre>
 		</div>
 	</div>
 

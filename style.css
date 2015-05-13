@@ -88,3 +88,10 @@
 	disabled: disabled; 
 	display: inline
 }
+
+pre{
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap !important;
+	word-wrap: normal;
+	width: 95%;
+}
