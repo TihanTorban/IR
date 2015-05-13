@@ -184,8 +184,8 @@ if (isset($_GET["data"]) && isset($_GET['id_user'])){
 						$query = "SELECT AVG(T.value) AS avg, ".
 										"MIN(T.value) AS min, ".
 										"MAX(T.value) AS max ".
-									"FROM ir.trec_eval AS T ".
-									"INNER JOIN ir.queries AS Q ".
+									"FROM trec_eval AS T ".
+									"INNER JOIN queries AS Q ".
 										"ON T.id_query = Q.id ".
 									"WHERE T.name = '$param' ".
 										"AND  Q.id_query = 'all' ";

@@ -167,10 +167,10 @@ class Trec_eval{
 		$id_run = $this->db->real_escape_string($this->id_run);
 		$id_user = $this->db->real_escape_string($this->id_user);
 		
-		$query = "SELECT AVG(T.value) AS avg FROM ir.trec_eval AS T ".
-					"INNER JOIN ir.runs AS R ".
+		$query = "SELECT AVG(T.value) AS avg FROM trec_eval AS T ".
+					"INNER JOIN runs AS R ".
 						"ON T.id_run = R.id_run ".
-					"INNER JOIN ir.queries AS Q ".
+					"INNER JOIN queries AS Q ".
 						"ON T.id_query = Q.id ".
 					"WHERE T.name = '$parameter' ".
 						"AND  Q.id_query = 'all'";
@@ -199,8 +199,8 @@ class Trec_eval{
 		$id_run = $this->db->real_escape_string($this->id_run);
 		$id_user = $this->db->real_escape_string($this->id_user);
 		
-		$query = "SELECT value FROM ir.trec_eval AS T ".
-					"INNER JOIN ir.queries AS Q ".
+		$query = "SELECT value FROM trec_eval AS T ".
+					"INNER JOIN queries AS Q ".
 						"ON T.id_query = Q.id ".
 					"WHERE  T.id_run = '$run' ".
 						"AND T.name = '$parameter' ". 

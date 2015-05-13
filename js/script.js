@@ -49,9 +49,7 @@ $collection.on( "changeCollection", function () {
 		getRunsValues($(this).prop("id"));
 		
 		$(".runs_a_b").show();
-		
 
-		
 	}else{
 		$(".coll_sett").hide();
 		$("#overview").empty();
@@ -65,8 +63,8 @@ $collection.on( "compareToRuns", function () {
 	
 	if ( run_id_a > -1 && run_id_b > -1){
 		
-		$(".nl").text("");
-		$(".naturalLG").hide();
+//		$(".nl").text("");
+//		$(".naturalLG").hide();
 		
 		$(this).prop("compare", { a: run_id_a, b: run_id_b });
 		

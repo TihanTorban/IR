@@ -72,11 +72,11 @@ class Runs{
 		
 		$id_collection = $this->db->real_escape_string($this->id_collection);
 		
-		$query_r = "SELECT * FROM ir.results AS R ".
+		$query_r = "SELECT * FROM results AS R ".
 					"WHERE R.id_run='$id_run' ". 
 						"AND R.id_collection=$id_collection";
 		
-		$query_q = "SELECT * FROM ir.qrels AS Q ".
+		$query_q = "SELECT * FROM qrels AS Q ".
 					"WHERE Q.relevant>0 ".
 						"AND Q.id_collection=$id_collection";
 		

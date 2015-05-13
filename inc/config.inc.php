@@ -31,6 +31,8 @@ $smarty->setConfigDir(PROJECT_DIR . "/smarty/configs");
 define("MYSQL_HOST", "localhost");
 define("MYSQL_USER", "ir_user");
 define("MYSQL_PASSWORD", "1qaz");
-define("MYSQL_DB", "ir"); 
+// define("MYSQL_DB", "ir"); 
+define("MYSQL_DB", "dbttorban");
+
 
 ?>
